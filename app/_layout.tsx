@@ -4,6 +4,7 @@ import { Stack } from "expo-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { persistQueryClient } from "@tanstack/react-query-persist-client";
 import { mmkvPersister } from "@/lib/storage/queryPersist";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -25,10 +26,12 @@ persistQueryClient({
 export default function RootLayout() {
   return (
     <QueryClientProvider client={queryClient}>
-      <Stack>
-        <Stack.Screen name="index" options={{ headerShown: false }} />
-        <Stack.Screen name="mosques" options={{ headerShown: false }} />
-      </Stack>
+      <SafeAreaView style={{ flex: 1, backgroundColor: "#262626" }}>
+        <Stack>
+          <Stack.Screen name="index" options={{ headerShown: false }} />
+          <Stack.Screen name="mosques" options={{ headerShown: false }} />
+        </Stack>
+      </SafeAreaView>
     </QueryClientProvider>
   );
 }
