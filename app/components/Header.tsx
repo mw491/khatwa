@@ -30,9 +30,9 @@ export default function Header() {
   };
 
   return (
-    <View className="bg-emerald-700 justify-center items-center w-full pt-24 pb-16 rounded-b-3xl">
+    <View className="bg-emerald-700 justify-center items-center w-full pt-16 pb-16 rounded-b-3xl">
       <Text className="text-4xl font-bold text-white font-mono mb-6">
-        Jamaat Times
+        Prayer Times
       </Text>
       <Text className="text-2xl text-white/80 font-mono mb-2">
         {formatDate(currentTime)}

@@ -1,4 +1,5 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useEffect, useState } from 'react';
 
 export interface Timings {
   mosque_name: string;
@@ -78,7 +79,26 @@ export function getCurrentOrNextPrayer(prayerTimes: PrayerTimes): PrayerInfo {
 }
 
 export function useTodayTimings() {
-  const today = new Date().toISOString().split('T')[0];
+  const [midnightTick, setMidnightTick] = useState(0);
+  const queryClient = useQueryClient();
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  const today = `${year}-${month}-${day}`;
+
+  // Compute milliseconds until the next local midnight
+  const nextMidnight = new Date(year, now.getMonth(), now.getDate() + 1, 0, 0, 0, 0);
+  const msUntilMidnight = Math.max(0, nextMidnight.getTime() - now.getTime());
+
+  // At local midnight, force a re-render (so `today` changes) and invalidate existing data
+  useEffect(() => {
+    const id = setTimeout(() => {
+      setMidnightTick((t) => t + 1);
+      queryClient.invalidateQueries({ queryKey: ['dailyData'] });
+    }, msUntilMidnight);
+    return () => clearTimeout(id);
+  }, [today, msUntilMidnight, queryClient]);
   return useQuery<Timings[]>({
     queryKey: ['dailyData', today],
     queryFn: async () => {
@@ -86,6 +106,7 @@ export function useTodayTimings() {
       if (!res.ok) throw new Error('Network error');
       return res.json();
     },
-    staleTime: 1000 * 60 * 60 * 24, // 24 hours
+    // Keep data fresh until the next local midnight
+    staleTime: msUntilMidnight,
   });
 }

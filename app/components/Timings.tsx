@@ -1,4 +1,11 @@
-import { View, Text, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  ActivityIndicator,
+  Animated,
+} from "react-native";
+import { useEffect, useRef } from "react";
 import {
   useTodayTimings,
   getCurrentOrNextPrayer,
@@ -8,28 +15,73 @@ import { router } from "expo-router";
 
 export default function Timings() {
   const { data: timings, isLoading, error } = useTodayTimings();
-  if (isLoading) return <Text>Loading...</Text>;
-  if (error || !timings) return <Text>Error: {error?.message}</Text>;
-
   const selectedMosqueIndex = useMosqueStore(
     (state) => state.selectedMosqueIndex
   );
+  const timesOpacity = useRef(new Animated.Value(0)).current;
 
-  const currentPrayer = getCurrentOrNextPrayer(
-    timings[selectedMosqueIndex].prayer_times
-  );
+  useEffect(() => {
+    if (!isLoading && !error && timings) {
+      Animated.timing(timesOpacity, {
+        toValue: 1,
+        duration: 250,
+        useNativeDriver: true,
+      }).start();
+    } else {
+      timesOpacity.setValue(0);
+    }
+  }, [isLoading, error, timings, timesOpacity]);
 
-  const renderPrayerRow = (
+  const prayerTimes = timings?.[selectedMosqueIndex]?.prayer_times;
+  const currentPrayer = prayerTimes
+    ? getCurrentOrNextPrayer(prayerTimes)
+    : ({ name: "", isNext: false } as { name: string; isNext: boolean });
+
+  // const renderPrayerRow = (
+  //   prayerName: string,
+  //   displayName: string,
+  //   time: string
+  // ) => {
+  //   const isCurrentOrNext = currentPrayer.name === prayerName;
+  //   const isCurrent = isCurrentOrNext && !currentPrayer.isNext;
+
+  //   return (
+  //     <View
+  //       className={`flex-row justify-between rounded-xl p-4 border-2 border-transparent ${
+  //         isCurrentOrNext
+  //           ? isCurrent
+  //             ? "bg-emerald-600"
+  //             : "bg-neutral-700 border-emerald-400"
+  //           : "bg-neutral-700"
+  //       }`}
+  //     >
+  //       <Text
+  //         className={`text-2xl ${isCurrentOrNext ? "text-white font-bold" : "text-white"}`}
+  //       >
+  //         {displayName}
+  //       </Text>
+  //       <Text
+  //         className={`text-2xl ${isCurrentOrNext ? "text-white font-bold" : "text-white"}`}
+  //       >
+  //         {time}
+  //       </Text>
+  //     </View>
+  //   );
+  // };
+
+  const renderPrayerCard = (
     prayerName: string,
     displayName: string,
-    time: string
+    athanTime: string,
+    iqamahTime: string,
+    loading: boolean
   ) => {
-    const isCurrentOrNext = currentPrayer.name === prayerName;
+    const isCurrentOrNext = !loading && currentPrayer.name === prayerName;
     const isCurrent = isCurrentOrNext && !currentPrayer.isNext;
 
     return (
       <View
-        className={`flex-row justify-between rounded-xl p-4 border-2 border-transparent ${
+        className={`rounded-xl p-4 border-2 border-transparent ${
           isCurrentOrNext
             ? isCurrent
               ? "bg-emerald-600"
@@ -37,16 +89,35 @@ export default function Timings() {
             : "bg-neutral-700"
         }`}
       >
-        <Text
-          className={`text-2xl ${isCurrentOrNext ? "text-white font-bold" : "text-white"}`}
-        >
-          {displayName}
-        </Text>
-        <Text
-          className={`text-2xl ${isCurrentOrNext ? "text-white font-bold" : "text-white"}`}
-        >
-          {time}
-        </Text>
+        <Text className={`text-2xl font-bold text-white`}>{displayName}</Text>
+        <View className="flex-row justify-evenly mt-4">
+          <View className="items-center">
+            <Text className="text-xl text-white">Athan</Text>
+            {loading ? (
+              <View className="h-6 w-20 bg-neutral-600 rounded mt-1" />
+            ) : (
+              <Animated.Text
+                style={{ opacity: timesOpacity }}
+                className="text-2xl text-white font-bold"
+              >
+                {athanTime}
+              </Animated.Text>
+            )}
+          </View>
+          <View className="items-center">
+            <Text className="text-xl text-white">Iqamah</Text>
+            {loading ? (
+              <View className="h-6 w-20 bg-neutral-600 rounded mt-1" />
+            ) : (
+              <Animated.Text
+                style={{ opacity: timesOpacity }}
+                className="text-2xl text-white font-bold"
+              >
+                {iqamahTime}
+              </Animated.Text>
+            )}
+          </View>
+        </View>
       </View>
     );
   };
@@ -57,36 +128,63 @@ export default function Timings() {
         className="bg-neutral-800 border-emerald-400 border-2 min-w-96 rounded-xl p-8 mt-[-32px] mb-5 elevation-xl"
         onPress={() => router.push("/mosques")}
       >
-        <Text className="text-2xl text-white text-center font-bold">
-          {timings[selectedMosqueIndex].mosque_name}
-        </Text>
+        {isLoading || !timings ? (
+          <View className="flex-row items-center justify-center">
+            <ActivityIndicator size="small" color="#10b981" />
+            <Text className="text-white text-center font-bold ml-3">
+              Loading...
+            </Text>
+          </View>
+        ) : (
+          <Text className="text-2xl text-white text-center font-bold">
+            {timings[selectedMosqueIndex].mosque_name}
+          </Text>
+        )}
       </TouchableOpacity>
 
+      {error && (
+        <View className="w-full items-center mb-5">
+          <View className="bg-neutral-800 border-red-400 border-2 min-w-96 rounded-xl p-4 items-center">
+            <Text className="text-white text-center">{`Error: ${error?.message ?? "Unable to load"}`}</Text>
+          </View>
+        </View>
+      )}
+
       <View className="min-w-96 gap-5">
-        {renderPrayerRow(
+        {renderPrayerCard(
           "fajr",
           "Fajr",
-          timings[selectedMosqueIndex].prayer_times.fajr
+          prayerTimes?.fajr ?? "",
+          "05:30",
+          isLoading || !timings
         )}
-        {renderPrayerRow(
+        {renderPrayerCard(
           "dhuhr",
           "Dhuhr",
-          timings[selectedMosqueIndex].prayer_times.dhuhr
+          prayerTimes?.dhuhr ?? "",
+          "12:30",
+          isLoading || !timings
         )}
-        {renderPrayerRow(
+        {renderPrayerCard(
           "asr",
           "Asr",
-          timings[selectedMosqueIndex].prayer_times.asr
+          prayerTimes?.asr ?? "",
+          "15:45",
+          isLoading || !timings
         )}
-        {renderPrayerRow(
+        {renderPrayerCard(
           "maghrib",
           "Maghrib",
-          timings[selectedMosqueIndex].prayer_times.maghrib
+          prayerTimes?.maghrib ?? "",
+          "18:15",
+          isLoading || !timings
         )}
-        {renderPrayerRow(
+        {renderPrayerCard(
           "isha",
           "Isha",
-          timings[selectedMosqueIndex].prayer_times.isha
+          prayerTimes?.isha ?? "",
+          "19:45",
+          isLoading || !timings
         )}
       </View>
     </View>

@@ -21,6 +21,8 @@ export default function Index() {
 
   return (
     <ScrollView
+      className="bg-neutral-800"
+      contentContainerStyle={{ flexGrow: 1 }}
       showsVerticalScrollIndicator={false}
       refreshControl={
         <RefreshControl

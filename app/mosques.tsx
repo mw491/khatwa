@@ -1,4 +1,10 @@
-import { View, Text, TouchableOpacity, ScrollView } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  ScrollView,
+  ActivityIndicator,
+} from "react-native";
 import { useTodayTimings } from "@/lib/hooks/useTodayTimings";
 import { useMosqueStore } from "@/lib/store/mosqueStore";
 import { router } from "expo-router";
@@ -12,12 +18,17 @@ export default function MosquesScreen() {
     (state) => state.setSelectedMosqueIndex
   );
 
-  if (isLoading)
-    return <Text className="text-white text-center">Loading...</Text>;
-  if (error || !timings)
-    return (
-      <Text className="text-white text-center">Error: {error?.message}</Text>
-    );
+  const renderLoadingCard = () => (
+    <View className="rounded-xl p-6 bg-neutral-700 items-center">
+      <ActivityIndicator size="large" color="#10b981" />
+      <Text className="text-white text-center mt-3">Loading...</Text>
+    </View>
+  );
+  const renderErrorCard = () => (
+    <View className="rounded-xl p-6 bg-neutral-700 items-center border-2 border-red-400">
+      <Text className="text-white text-center">{`Error: ${error?.message ?? "Unable to load"}`}</Text>
+    </View>
+  );
 
   const handleMosqueSelect = (index: number) => {
     setSelectedMosqueIndex(index);
@@ -42,30 +53,34 @@ export default function MosquesScreen() {
         showsVerticalScrollIndicator={false}
       >
         <View className="gap-4">
-          {timings.map((mosque, index) => (
-            <TouchableOpacity
-              key={index}
-              onPress={() => handleMosqueSelect(index)}
-              className={`rounded-xl p-6 ${
-                index === selectedMosqueIndex
-                  ? "bg-emerald-600 border-2 border-emerald-400"
-                  : "bg-neutral-700"
-              }`}
-            >
-              <Text
-                className={`text-2xl font-semibold text-center ${
-                  index === selectedMosqueIndex ? "text-white" : "text-white"
+          {isLoading && renderLoadingCard()}
+          {!isLoading && error && renderErrorCard()}
+          {!isLoading &&
+            timings &&
+            timings.map((mosque, index) => (
+              <TouchableOpacity
+                key={index}
+                onPress={() => handleMosqueSelect(index)}
+                className={`rounded-xl p-6 ${
+                  index === selectedMosqueIndex
+                    ? "bg-emerald-600 border-2 border-emerald-400"
+                    : "bg-neutral-700"
                 }`}
               >
-                {mosque.mosque_name}
-              </Text>
-              {index === selectedMosqueIndex && (
-                <Text className="text-emerald-200 text-center mt-2 text-sm">
-                  Currently Selected
+                <Text
+                  className={`text-2xl font-semibold text-center ${
+                    index === selectedMosqueIndex ? "text-white" : "text-white"
+                  }`}
+                >
+                  {mosque.mosque_name}
                 </Text>
-              )}
-            </TouchableOpacity>
-          ))}
+                {index === selectedMosqueIndex && (
+                  <Text className="text-emerald-200 text-center mt-2 text-sm">
+                    Currently Selected
+                  </Text>
+                )}
+              </TouchableOpacity>
+            ))}
         </View>
       </ScrollView>
     </View>
