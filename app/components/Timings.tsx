@@ -69,6 +69,15 @@ export default function Timings() {
   //   );
   // };
 
+  const renderJumahCard = (displayName: string, time: string) => {
+    return (
+      <View className="bg-neutral-700 flex-row justify-between rounded-xl p-4 border-2 border-transparent">
+        <Text className="text-2xl text-white">{displayName}</Text>
+        <Text className="text-2xl text-white">{time}</Text>
+      </View>
+    );
+  };
+
   const renderPrayerCard = (
     prayerName: string,
     displayName: string,
@@ -154,38 +163,45 @@ export default function Timings() {
         {renderPrayerCard(
           "fajr",
           "Fajr",
-          prayerTimes?.fajr ?? "",
           "05:30",
+          prayerTimes?.fajr ?? "",
           isLoading || !timings
         )}
         {renderPrayerCard(
           "dhuhr",
           "Dhuhr",
-          prayerTimes?.dhuhr ?? "",
           "12:30",
+          prayerTimes?.dhuhr ?? "",
           isLoading || !timings
         )}
         {renderPrayerCard(
           "asr",
           "Asr",
-          prayerTimes?.asr ?? "",
           "15:45",
+          prayerTimes?.asr ?? "",
           isLoading || !timings
         )}
         {renderPrayerCard(
           "maghrib",
           "Maghrib",
-          prayerTimes?.maghrib ?? "",
           "18:15",
+          prayerTimes?.maghrib ?? "",
           isLoading || !timings
         )}
         {renderPrayerCard(
           "isha",
           "Isha",
-          prayerTimes?.isha ?? "",
           "19:45",
+          prayerTimes?.isha ?? "",
           isLoading || !timings
         )}
+        {prayerTimes?.jumah_1 &&
+          renderJumahCard(
+            prayerTimes?.jumah_2 ? "Jumah 1" : "Jumah",
+            prayerTimes?.jumah_1 ?? ""
+          )}
+        {prayerTimes?.jumah_2 &&
+          renderJumahCard("Jumah 2", prayerTimes?.jumah_2 ?? "")}
       </View>
     </View>
   );

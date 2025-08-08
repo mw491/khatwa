@@ -12,6 +12,8 @@ export interface PrayerTimes {
   asr: string;
   maghrib: string;
   isha: string;
+  jumah_1?: string;
+  jumah_2?: string;
 }
 
 export interface PrayerInfo {
