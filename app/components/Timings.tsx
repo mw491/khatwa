@@ -90,16 +90,16 @@ export default function Timings() {
 
     return (
       <View
-        className={`rounded-xl p-4 border-2 border-transparent ${
+        className={`rounded-xl p-4 border-2 ${
           isCurrentOrNext
             ? isCurrent
-              ? "bg-emerald-600"
+              ? "bg-emerald-600 border-emerald-400"
               : "bg-neutral-700 border-emerald-400"
-            : "bg-neutral-700"
+            : "bg-neutral-700 border-neutral-700"
         }`}
       >
         <Text className={`text-2xl font-bold text-white`}>{displayName}</Text>
-        <View className="flex-row justify-evenly mt-4">
+        <View className="flex-row justify-evenly">
           <View className="items-center">
             <Text className="text-xl text-white">Athan</Text>
             {loading ? (
