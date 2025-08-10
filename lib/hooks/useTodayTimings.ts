@@ -7,18 +7,23 @@ export interface Timings {
 }
 
 export interface PrayerTimes {
-  fajr: string;
-  dhuhr: string;
-  asr: string;
-  maghrib: string;
-  isha: string;
+  fajr: PrayerTime;
+  dhuhr: PrayerTime;
+  asr: PrayerTime;
+  maghrib: PrayerTime;
+  isha: PrayerTime;
   jumah_1?: string;
   jumah_2?: string;
 }
 
+export interface PrayerTime {
+  starts: string | null;
+  jamat: string;
+}
+
 export interface PrayerInfo {
   name: string;
-  time: string;
+  time: PrayerTime;
   isNext: boolean;
 }
 
@@ -36,7 +41,7 @@ export function getCurrentOrNextPrayer(prayerTimes: PrayerTimes): PrayerInfo {
 
   // Convert prayer times to minutes for comparison
   const prayerMinutes = prayers.map(prayer => {
-    const [hours, minutes] = prayer.time.split(':').map(Number);
+    const [hours, minutes] = prayer.time.jamat.split(':').map(Number);
     return {
       name: prayer.name,
       time: prayer.time,

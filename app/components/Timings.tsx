@@ -163,36 +163,36 @@ export default function Timings() {
         {renderPrayerCard(
           "fajr",
           "Fajr",
-          "05:30",
-          prayerTimes?.fajr ?? "",
+          prayerTimes?.fajr.starts ?? "",
+          prayerTimes?.fajr.jamat ?? "",
           isLoading || !timings
         )}
         {renderPrayerCard(
           "dhuhr",
           "Dhuhr",
-          "12:30",
-          prayerTimes?.dhuhr ?? "",
+          prayerTimes?.dhuhr.starts ?? "",
+          prayerTimes?.dhuhr.jamat ?? "",
           isLoading || !timings
         )}
         {renderPrayerCard(
           "asr",
           "Asr",
-          "15:45",
-          prayerTimes?.asr ?? "",
+          prayerTimes?.asr.starts ?? "",
+          prayerTimes?.asr.jamat ?? "",
           isLoading || !timings
         )}
         {renderPrayerCard(
           "maghrib",
           "Maghrib",
-          "18:15",
-          prayerTimes?.maghrib ?? "",
+          prayerTimes?.maghrib.starts ?? "",
+          prayerTimes?.maghrib.jamat ?? "",
           isLoading || !timings
         )}
         {renderPrayerCard(
           "isha",
           "Isha",
-          "19:45",
-          prayerTimes?.isha ?? "",
+          prayerTimes?.isha.starts ?? "",
+          prayerTimes?.isha.jamat ?? "",
           isLoading || !timings
         )}
         {prayerTimes?.jumah_1 &&
