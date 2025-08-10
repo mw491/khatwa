@@ -12,13 +12,13 @@ export interface PrayerTimes {
   asr: PrayerTime;
   maghrib: PrayerTime;
   isha: PrayerTime;
-  jumah_1?: string;
-  jumah_2?: string;
+  jumah_1: string | null;
+  jumah_2: string | null;
 }
 
 export interface PrayerTime {
   starts: string | null;
-  jamat: string;
+  jamat: string | null;
 }
 
 export interface PrayerInfo {
@@ -39,15 +39,49 @@ export function getCurrentOrNextPrayer(prayerTimes: PrayerTimes): PrayerInfo {
     { name: 'isha', time: prayerTimes.isha }
   ];
 
+  // Helper to parse HH:MM into minutes. Returns null if invalid.
+  const parseTimeToMinutes = (time: string | null): number | null => {
+    if (!time) return null;
+    const parts = time.split(':');
+    if (parts.length !== 2) return null;
+    const [hoursStr, minutesStr] = parts;
+    const hours = Number(hoursStr);
+    const minutes = Number(minutesStr);
+    if (
+      Number.isNaN(hours) ||
+      Number.isNaN(minutes) ||
+      hours < 0 ||
+      hours > 23 ||
+      minutes < 0 ||
+      minutes > 59
+    ) {
+      return null;
+    }
+    return hours * 60 + minutes;
+  };
+
   // Convert prayer times to minutes for comparison
-  const prayerMinutes = prayers.map(prayer => {
-    const [hours, minutes] = prayer.time.jamat.split(':').map(Number);
+  const prayerMinutes = prayers
+    .map((prayer) => {
+      const minutes = parseTimeToMinutes(prayer.time?.jamat ?? null);
+      return minutes === null
+        ? null
+        : {
+          name: prayer.name,
+          time: prayer.time,
+          minutes,
+        };
+    })
+    .filter((p): p is { name: string; time: PrayerTime; minutes: number } => p !== null);
+
+  // If all values are null/invalid, return a safe fallback
+  if (prayerMinutes.length === 0) {
     return {
-      name: prayer.name,
-      time: prayer.time,
-      minutes: hours * 60 + minutes
+      name: '',
+      time: { starts: null, jamat: null },
+      isNext: false,
     };
-  });
+  }
 
   // Check if we're currently in a prayer window (15 minutes before to 5 minutes after prayer time)
   const currentPrayer = prayerMinutes.find(prayer => {
@@ -71,10 +105,12 @@ export function getCurrentOrNextPrayer(prayerTimes: PrayerTimes): PrayerInfo {
 
   // If no next prayer found today, the next prayer is Fajr tomorrow
   if (!nextPrayer) {
+    // Use the earliest available prayer time as the next one for tomorrow
+    const earliest = prayerMinutes.reduce((min, p) => (p.minutes < min.minutes ? p : min));
     return {
-      name: 'fajr',
-      time: prayerTimes.fajr,
-      isNext: true
+      name: earliest.name,
+      time: earliest.time,
+      isNext: true,
     };
   }
 
