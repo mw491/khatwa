@@ -10,6 +10,7 @@ import { useTodayTimings } from "@/lib/hooks/useTodayTimings";
 import { useMosqueStore } from "@/lib/store/mosqueStore";
 import { router } from "expo-router";
 import { useDeferredValue, useState } from "react";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function MosquesScreen() {
   const { data: timings, isLoading, error } = useTodayTimings();
@@ -45,7 +46,14 @@ export default function MosquesScreen() {
   return (
     <View className="flex-1 bg-neutral-800">
       {/* Header */}
-      <View className="bg-emerald-700 justify-center items-center w-full pt-24 pb-16 rounded-b-3xl">
+      <View className="bg-emerald-700 justify-center items-center w-full pt-24 pb-16 rounded-b-3xl relative">
+        <TouchableOpacity
+          onPress={() => router.back()}
+          className="absolute left-5 top-5 p-3 rounded-full bg-white/10"
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+        >
+          <Ionicons name="arrow-back" size={24} color="#ffffff" />
+        </TouchableOpacity>
         <Text className="text-4xl font-bold text-white font-mono mb-6">
           Mosques
         </Text>
