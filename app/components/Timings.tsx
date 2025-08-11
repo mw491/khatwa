@@ -90,7 +90,7 @@ export default function Timings() {
 
     return (
       <View
-        className={`rounded-xl p-4 border-2 ${
+        className={`rounded-xl p-4 border-2 flex-row items-center justify-between ${
           isCurrentOrNext
             ? isCurrent
               ? "bg-emerald-600 border-emerald-400"
@@ -98,23 +98,23 @@ export default function Timings() {
             : "bg-neutral-700 border-neutral-700"
         }`}
       >
-        <Text className={`text-2xl font-bold text-white`}>{displayName}</Text>
-        <View className="flex-row justify-evenly">
+        <Text className={`text-3xl font-bold text-white`}>{displayName}</Text>
+        <View className="flex-row gap-5">
           <View className="items-center">
-            <Text className="text-xl text-white">Athan</Text>
+            <Text className="text-md text-white">Athan</Text>
             {loading ? (
               <View className="h-6 w-20 bg-neutral-600 rounded mt-1" />
             ) : (
               <Animated.Text
                 style={{ opacity: timesOpacity }}
-                className="text-2xl text-white font-bold"
+                className="text-2xl text-white"
               >
                 {athanTime}
               </Animated.Text>
             )}
           </View>
           <View className="items-center">
-            <Text className="text-xl text-white">Iqamah</Text>
+            <Text className="text-md text-white font-bold">Iqamah</Text>
             {loading ? (
               <View className="h-6 w-20 bg-neutral-600 rounded mt-1" />
             ) : (
