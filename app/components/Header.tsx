@@ -12,12 +12,20 @@ export default function Header() {
     return () => clearInterval(timer);
   }, []);
 
-  const formatDate = (date: Date) => {
+  const formatGregorianDate = (date: Date) => {
     return date.toLocaleDateString("en-US", {
       weekday: "long",
       day: "numeric",
       month: "long",
     });
+  };
+
+  const formatHijriDate = (date: Date) => {
+    return new Intl.DateTimeFormat("ar-SA-u-ca-islamic", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    }).format(date);
   };
 
   const formatTime = (date: Date) => {
@@ -35,7 +43,10 @@ export default function Header() {
         Prayer Times
       </Text>
       <Text className="text-2xl text-white/80 font-mono mb-2">
-        {formatDate(currentTime)}
+        {formatGregorianDate(currentTime)}
+      </Text>
+      <Text className="text-2xl text-white/80 font-mono mb-2">
+        {formatHijriDate(currentTime)}
       </Text>
       <Text className="text-2xl text-white font-mono font-bold">
         {formatTime(currentTime)}
