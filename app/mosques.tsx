@@ -2,20 +2,20 @@ import {
   View,
   Text,
   TouchableOpacity,
-  ScrollView,
   ActivityIndicator,
+  FlatList,
+  TextInput,
 } from "react-native";
 import { useTodayTimings } from "@/lib/hooks/useTodayTimings";
 import { useMosqueStore } from "@/lib/store/mosqueStore";
 import { router } from "expo-router";
+import { useDeferredValue, useState } from "react";
 
 export default function MosquesScreen() {
   const { data: timings, isLoading, error } = useTodayTimings();
-  const selectedMosqueIndex = useMosqueStore(
-    (state) => state.selectedMosqueIndex
-  );
-  const setSelectedMosqueIndex = useMosqueStore(
-    (state) => state.setSelectedMosqueIndex
+  const selectedMosqueID = useMosqueStore((state) => state.selectedMosqueID);
+  const setselectedMosqueID = useMosqueStore(
+    (state) => state.setSelectedMosqueID
   );
 
   const renderLoadingCard = () => (
@@ -30,10 +30,17 @@ export default function MosquesScreen() {
     </View>
   );
 
-  const handleMosqueSelect = (index: number) => {
-    setSelectedMosqueIndex(index);
+  const handleMosqueSelect = (id: string) => {
+    setselectedMosqueID(id);
     router.back();
   };
+
+  const [query, setQuery] = useState("");
+  const deferredQuery = useDeferredValue(query);
+  const filteredTimings = timings?.filter((timing) => {
+    const timingName = timing.mosque_name.toLowerCase();
+    return timingName.includes(deferredQuery.toLowerCase());
+  });
 
   return (
     <View className="flex-1 bg-neutral-800">
@@ -47,42 +54,56 @@ export default function MosquesScreen() {
         </Text>
       </View>
 
+      <TextInput
+        value={query}
+        onChangeText={setQuery}
+        placeholder="Search mosques..."
+        placeholderTextColor="#d4d4d8"
+        autoCapitalize="none"
+        autoCorrect={false}
+        clearButtonMode="while-editing"
+        className="bg-neutral-700 text-white rounded-xl my-5 mx-4 p-4"
+      />
+
       {/* Mosque Cards */}
-      <ScrollView
-        className="flex-1 px-4 py-6"
+      <FlatList
+        className="flex-1"
+        data={deferredQuery ? filteredTimings : (timings ?? [])}
+        keyExtractor={(item) => item._id}
+        renderItem={({ item: mosque }) => (
+          <TouchableOpacity
+            onPress={() => handleMosqueSelect(mosque._id)}
+            activeOpacity={0.5}
+            className={`rounded-xl p-6 ${
+              mosque._id === selectedMosqueID
+                ? "bg-emerald-600 border-2 border-emerald-400"
+                : "bg-neutral-700"
+            }`}
+          >
+            <Text
+              className={`text-2xl font-semibold text-center ${
+                mosque._id === selectedMosqueID ? "text-white" : "text-white"
+              }`}
+            >
+              {mosque.mosque_name}
+            </Text>
+            {mosque._id === selectedMosqueID && (
+              <Text className="text-emerald-200 text-center mt-2 text-sm">
+                Currently Selected
+              </Text>
+            )}
+          </TouchableOpacity>
+        )}
+        ItemSeparatorComponent={() => <View style={{ height: 16 }} />}
+        ListHeaderComponent={() => (
+          <View style={{ marginBottom: 16 }}>
+            {isLoading && renderLoadingCard()}
+            {!isLoading && error && renderErrorCard()}
+          </View>
+        )}
+        contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 24 }}
         showsVerticalScrollIndicator={false}
-      >
-        <View className="gap-4">
-          {isLoading && renderLoadingCard()}
-          {!isLoading && error && renderErrorCard()}
-          {!isLoading &&
-            timings &&
-            timings.map((mosque, index) => (
-              <TouchableOpacity
-                key={index}
-                onPress={() => handleMosqueSelect(index)}
-                className={`rounded-xl p-6 ${
-                  index === selectedMosqueIndex
-                    ? "bg-emerald-600 border-2 border-emerald-400"
-                    : "bg-neutral-700"
-                }`}
-              >
-                <Text
-                  className={`text-2xl font-semibold text-center ${
-                    index === selectedMosqueIndex ? "text-white" : "text-white"
-                  }`}
-                >
-                  {mosque.mosque_name}
-                </Text>
-                {index === selectedMosqueIndex && (
-                  <Text className="text-emerald-200 text-center mt-2 text-sm">
-                    Currently Selected
-                  </Text>
-                )}
-              </TouchableOpacity>
-            ))}
-        </View>
-      </ScrollView>
+      />
     </View>
   );
 }

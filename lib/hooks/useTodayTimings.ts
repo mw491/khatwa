@@ -2,7 +2,12 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 
 export interface Timings {
+  _id: string;
   mosque_name: string;
+  postcode: string;
+  coordinates: { lat: number, long: number };
+  google_maps_link: string;
+  website: string;
   prayer_times: PrayerTimes;
 }
 

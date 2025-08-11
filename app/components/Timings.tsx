@@ -15,9 +15,7 @@ import { router } from "expo-router";
 
 export default function Timings() {
   const { data: timings, isLoading, error } = useTodayTimings();
-  const selectedMosqueIndex = useMosqueStore(
-    (state) => state.selectedMosqueIndex
-  );
+  const selectedMosqueID = useMosqueStore((state) => state.selectedMosqueID);
   const timesOpacity = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -32,7 +30,8 @@ export default function Timings() {
     }
   }, [isLoading, error, timings, timesOpacity]);
 
-  const prayerTimes = timings?.[selectedMosqueIndex]?.prayer_times;
+  const mosque = timings?.find((timing) => timing._id === selectedMosqueID);
+  const prayerTimes = mosque?.prayer_times;
   const currentPrayer = prayerTimes
     ? getCurrentOrNextPrayer(prayerTimes)
     : ({ name: "", isNext: false } as { name: string; isNext: boolean });
@@ -146,7 +145,7 @@ export default function Timings() {
           </View>
         ) : (
           <Text className="text-2xl text-white text-center font-bold">
-            {timings[selectedMosqueIndex].mosque_name}
+            {mosque?.mosque_name}
           </Text>
         )}
       </TouchableOpacity>

@@ -1,11 +1,11 @@
 import { create } from 'zustand';
 
 interface MosqueStore {
-  selectedMosqueIndex: number;
-  setSelectedMosqueIndex: (index: number) => void;
+  selectedMosqueID: string;
+  setSelectedMosqueID: (id: string) => void;
 }
 
 export const useMosqueStore = create<MosqueStore>((set) => ({
-  selectedMosqueIndex: 0,
-  setSelectedMosqueIndex: (index) => set({ selectedMosqueIndex: index }),
+  selectedMosqueID: "",
+  setSelectedMosqueID: (id) => set({ selectedMosqueID: id }),
 }));
