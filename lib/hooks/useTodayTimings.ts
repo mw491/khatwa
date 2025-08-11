@@ -156,5 +156,7 @@ export function useTodayTimings() {
     },
     // Keep data fresh until the next local midnight
     staleTime: msUntilMidnight,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
   });
 }

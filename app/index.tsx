@@ -12,8 +12,7 @@ export default function Index() {
   const onRefresh = React.useCallback(async () => {
     setRefreshing(true);
     try {
-      // Invalidate and refetch the daily data
-      await queryClient.invalidateQueries({ queryKey: ["dailyData"] });
+      await queryClient.refetchQueries({ queryKey: ["dailyData"] });
     } finally {
       setRefreshing(false);
     }
