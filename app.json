@@ -1,20 +1,25 @@
 {
   "expo": {
-    "name": "khatwa",
+    "name": "Khatwa",
     "slug": "khatwa",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
     "scheme": "khatwa",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.mw491.khatwa"
+      "bundleIdentifier": "com.mw491.khatwa",
+      "icon": {
+        "dark": "./assets/icons/ios-dark.png",
+        "light": "./assets/icons/ios-light.png",
+        "tinted": "./assets/icons/ios-tinted.png"
+      }
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "foregroundImage": "./assets/icons/android-adaptive.png",
+        "monochromeImage": "./assets/icons/android-adaptive.png",
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
@@ -30,10 +35,14 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/splash-icon.png",
+          "image": "./assets/icons/splash-dark.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#ffffff"
+          "backgroundColor": "#ffffff",
+          "dark": {
+            "image": "./assets/icons/splash-light.png",
+            "backgroundColor": "#000000"
+          }
         }
       ]
     ],
