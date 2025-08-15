@@ -10,12 +10,14 @@ import {
   useTodayTimings,
   getCurrentOrNextPrayer,
 } from "@/lib/hooks/useTodayTimings";
-import { useMosqueStore } from "@/lib/store/mosqueStore";
+import { useSelectedMosqueStore } from "@/lib/store/mosqueStore";
 import { router } from "expo-router";
 
 export default function Timings() {
   const { data: timings, isLoading, error } = useTodayTimings();
-  const selectedMosqueID = useMosqueStore((state) => state.selectedMosqueID);
+  const selectedMosqueID = useSelectedMosqueStore(
+    (state) => state.selectedMosqueID
+  );
   const timesOpacity = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {

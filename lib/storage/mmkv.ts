@@ -1,5 +1,5 @@
 import { MMKV } from 'react-native-mmkv';
 
 export const mmkv = new MMKV({
-  id: 'react-query',
+  id: 'app-storage',
 });

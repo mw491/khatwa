@@ -3,11 +3,13 @@ import {
   Text,
   TouchableOpacity,
   ActivityIndicator,
-  FlatList,
   TextInput,
 } from "react-native";
 import { useTodayTimings } from "@/lib/hooks/useTodayTimings";
-import { useMosqueStore } from "@/lib/store/mosqueStore";
+import {
+  useSelectedMosqueStore,
+  usePinnedMosquesStore,
+} from "@/lib/store/mosqueStore";
 import { router } from "expo-router";
 import { useDeferredValue, useState, useMemo, useCallback } from "react";
 import { LegendList } from "@legendapp/list";
@@ -15,24 +17,52 @@ import { Ionicons } from "@expo/vector-icons";
 
 export default function MosquesScreen() {
   const { data: timings, isLoading, error } = useTodayTimings();
-  const selectedMosqueID = useMosqueStore((state) => state.selectedMosqueID);
-  const setselectedMosqueID = useMosqueStore(
+  const selectedMosqueID = useSelectedMosqueStore(
+    (state) => state.selectedMosqueID
+  );
+  const setselectedMosqueID = useSelectedMosqueStore(
     (state) => state.setSelectedMosqueID
+  );
+
+  const pinnedMosques = usePinnedMosquesStore((state) => state.pinnedMosques);
+  const togglePinnedMosque = usePinnedMosquesStore(
+    (state) => state.togglePinnedMosque
   );
 
   const [query, setQuery] = useState("");
   const deferredQuery = useDeferredValue(query);
 
-  // Memoize filtered data to prevent recalculation
+  // Memoize filtered and sorted data to prevent recalculation
   const filteredTimings = useMemo(() => {
     if (!timings) return [];
-    if (!deferredQuery) return timings;
 
-    const queryLower = deferredQuery.toLowerCase();
-    return timings.filter((timing) =>
-      timing.mosque_name.toLowerCase().includes(queryLower)
-    );
-  }, [timings, deferredQuery]);
+    let filtered = timings;
+
+    // Apply search filter if query exists
+    if (deferredQuery) {
+      const queryLower = deferredQuery.toLowerCase();
+      filtered = timings.filter((timing) =>
+        timing.mosque_name.toLowerCase().includes(queryLower)
+      );
+    }
+
+    // Sort: selected mosque first, then pinned mosques, then the rest
+    return filtered.sort((a, b) => {
+      // Selected mosque comes first
+      if (a._id === selectedMosqueID) return -1;
+      if (b._id === selectedMosqueID) return 1;
+
+      // Pinned mosques come second
+      const aIsPinned = pinnedMosques.includes(a._id);
+      const bIsPinned = pinnedMosques.includes(b._id);
+
+      if (aIsPinned && !bIsPinned) return -1;
+      if (!aIsPinned && bIsPinned) return 1;
+
+      // Rest remain in original order
+      return 0;
+    });
+  }, [timings, deferredQuery, selectedMosqueID, pinnedMosques]);
 
   const renderLoadingCard = () => (
     <View className="rounded-xl p-6 bg-neutral-700 items-center">
@@ -51,33 +81,35 @@ export default function MosquesScreen() {
     router.back();
   };
 
-  // Memoize the renderItem function
-  const renderItem = useCallback(
-    ({ item: mosque }: { item: any }) => (
-      <TouchableOpacity
-        onPress={() => handleMosqueSelect(mosque._id)}
-        activeOpacity={0.5}
-        className={`rounded-xl p-6 ${
-          mosque._id === selectedMosqueID
-            ? "bg-emerald-600 border-2 border-emerald-400"
-            : "bg-neutral-700"
+  const renderItem = ({ item: mosque }: { item: any }) => (
+    <TouchableOpacity
+      onPress={() => handleMosqueSelect(mosque._id)}
+      activeOpacity={0.5}
+      className={`rounded-xl p-6 flex-row items-center gap-3 ${
+        mosque._id === selectedMosqueID
+          ? "bg-emerald-600 border-2 border-emerald-400"
+          : "bg-neutral-700"
+      }`}
+    >
+      <Text
+        className={`text-2xl font-semibold text-left flex-1 ${
+          mosque._id === selectedMosqueID ? "text-white" : "text-white"
         }`}
+        numberOfLines={3}
       >
-        <Text
-          className={`text-2xl font-semibold text-center ${
-            mosque._id === selectedMosqueID ? "text-white" : "text-white"
-          }`}
-        >
-          {mosque.mosque_name}
-        </Text>
-        {mosque._id === selectedMosqueID && (
-          <Text className="text-emerald-200 text-center mt-2 text-sm">
-            Currently Selected
-          </Text>
-        )}
+        {mosque.mosque_name}
+      </Text>
+      <TouchableOpacity
+        onPress={() => togglePinnedMosque(mosque._id)}
+        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+      >
+        <Ionicons
+          name="star"
+          size={24}
+          color={pinnedMosques.includes(mosque._id) ? "#facc15" : "#ffffff"}
+        />
       </TouchableOpacity>
-    ),
-    [selectedMosqueID]
+    </TouchableOpacity>
   );
 
   // Memoize the ItemSeparatorComponent
@@ -138,6 +170,7 @@ export default function MosquesScreen() {
         recycleItems={true}
         maintainVisibleContentPosition
         renderItem={renderItem}
+        extraData={pinnedMosques}
         ItemSeparatorComponent={ItemSeparatorComponent}
         ListHeaderComponent={ListHeaderComponent}
         contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 24 }}
