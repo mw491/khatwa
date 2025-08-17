@@ -1,5 +1,4 @@
 const IS_DEV = process.env.APP_VARIANT === 'development';
-console.log(IS_DEV ? "com.mw491.khatwadev" : "com.mw491.khatwa")
 
 export default {
   "expo": {
