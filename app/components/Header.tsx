@@ -1,5 +1,6 @@
+import { LinearGradient } from "expo-linear-gradient";
 import { useEffect, useState } from "react";
-import { Text, View } from "react-native";
+import { Text } from "react-native";
 
 export default function Header() {
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -38,7 +39,10 @@ export default function Header() {
   };
 
   return (
-    <View className="bg-neutral-700 justify-center items-center w-full pt-16 pb-16 rounded-b-3xl">
+    <LinearGradient
+      colors={["#171717", "#262626"]}
+      className="justify-center items-center w-full pt-16 pb-16 rounded-b-3xl"
+    >
       <Text className="text-4xl font-bold text-white font-mono mb-6">
         Prayer Times
       </Text>
@@ -51,6 +55,6 @@ export default function Header() {
       <Text className="text-2xl text-white font-mono font-bold">
         {formatTime(currentTime)}
       </Text>
-    </View>
+    </LinearGradient>
   );
 }

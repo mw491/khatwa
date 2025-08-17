@@ -5,6 +5,7 @@ import {
 } from "@/lib/store/mosqueStore";
 import { Ionicons } from "@expo/vector-icons";
 import { LegendList } from "@legendapp/list";
+import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import { useCallback, useDeferredValue, useMemo, useState } from "react";
 import {
@@ -135,7 +136,12 @@ export default function MosquesScreen() {
   return (
     <View className="flex-1 bg-neutral-800">
       {/* Header */}
-      <View className="bg-neutral-700 justify-center items-center w-full pt-24 pb-16 rounded-b-3xl relative">
+      <LinearGradient
+        colors={["#171717", "#262626"]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 0, y: 1 }}
+        className="justify-center items-center w-full pt-24 pb-16 rounded-b-3xl relative"
+      >
         <TouchableOpacity
           onPress={() => router.back()}
           className="absolute left-5 top-5 p-3 rounded-full bg-white/10"
@@ -149,7 +155,7 @@ export default function MosquesScreen() {
         <Text className="text-lg text-white/80 text-center px-8">
           Select a mosque to view its prayer times
         </Text>
-      </View>
+      </LinearGradient>
 
       <TextInput
         value={query}
