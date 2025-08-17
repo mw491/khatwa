@@ -158,5 +158,7 @@ export function useTodayTimings() {
     staleTime: msUntilMidnight,
     refetchOnMount: false,
     refetchOnWindowFocus: false,
+    retry: false,
+    placeholderData: (previousData) => previousData,
   });
 }

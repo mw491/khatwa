@@ -14,14 +14,19 @@ import {
 } from "react-native";
 
 export default function Timings() {
-  const { data: timings, isLoading, error } = useTodayTimings();
+  const { data: timings, isLoading, error, isError } = useTodayTimings();
   const selectedMosqueID = useSelectedMosqueStore(
     (state) => state.selectedMosqueID
   );
   const timesOpacity = useRef(new Animated.Value(0)).current;
 
+  // Check if we have data (either fresh or cached)
+  const hasData = !!timings;
+  // Only show loading if we have no data at all
+  const shouldShowLoading = isLoading && !hasData;
+
   useEffect(() => {
-    if (!isLoading && !error && timings) {
+    if (hasData) {
       Animated.timing(timesOpacity, {
         toValue: 1,
         duration: 250,
@@ -30,7 +35,7 @@ export default function Timings() {
     } else {
       timesOpacity.setValue(0);
     }
-  }, [isLoading, error, timings, timesOpacity]);
+  }, [hasData, timesOpacity]);
 
   const mosque = timings?.find((timing) => timing._id === selectedMosqueID);
   const prayerTimes = mosque?.prayer_times;
@@ -138,7 +143,7 @@ export default function Timings() {
         className="bg-neutral-800 border-neutral-400 border-2 min-w-96 rounded-xl p-8 mt-[-32px] mb-5 elevation-xl"
         onPress={() => router.push("/mosques")}
       >
-        {isLoading || !timings ? (
+        {shouldShowLoading ? (
           <View className="flex-row items-center justify-center">
             <ActivityIndicator size="small" color="#10b981" />
             <Text className="text-white text-center font-bold ml-3">
@@ -152,7 +157,7 @@ export default function Timings() {
         )}
       </TouchableOpacity>
 
-      {error && (
+      {isError && error && (
         <View className="w-full items-center mb-5">
           <View className="bg-neutral-800 border-red-400 border-2 min-w-96 rounded-xl p-4 items-center">
             <Text className="text-white text-center">{`Error: ${error?.message ?? "Unable to load"}`}</Text>
@@ -166,35 +171,35 @@ export default function Timings() {
           "Fajr",
           prayerTimes?.fajr.starts ?? "",
           prayerTimes?.fajr.jamat ?? "",
-          isLoading || !timings
+          shouldShowLoading
         )}
         {renderPrayerCard(
           "dhuhr",
           "Dhuhr",
           prayerTimes?.dhuhr.starts ?? "",
           prayerTimes?.dhuhr.jamat ?? "",
-          isLoading || !timings
+          shouldShowLoading
         )}
         {renderPrayerCard(
           "asr",
           "Asr",
           prayerTimes?.asr.starts ?? "",
           prayerTimes?.asr.jamat ?? "",
-          isLoading || !timings
+          shouldShowLoading
         )}
         {renderPrayerCard(
           "maghrib",
           "Maghrib",
           prayerTimes?.maghrib.starts ?? "",
           prayerTimes?.maghrib.jamat ?? "",
-          isLoading || !timings
+          shouldShowLoading
         )}
         {renderPrayerCard(
           "isha",
           "Isha",
           prayerTimes?.isha.starts ?? "",
           prayerTimes?.isha.jamat ?? "",
-          isLoading || !timings
+          shouldShowLoading
         )}
         {prayerTimes?.jumah_1 &&
           renderJumahCard(

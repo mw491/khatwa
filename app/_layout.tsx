@@ -1,9 +1,9 @@
 import "@/app/global.css";
 import { Stack } from "expo-router";
 
+import { mmkvPersister } from "@/lib/storage/queryPersist";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { persistQueryClient } from "@tanstack/react-query-persist-client";
-import { mmkvPersister } from "@/lib/storage/queryPersist";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const queryClient = new QueryClient({
