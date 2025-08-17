@@ -41,6 +41,8 @@ export default function Header() {
   return (
     <LinearGradient
       colors={["#171717", "#262626"]}
+      start={{ x: 0, y: 0.3 }}
+      end={{ x: 0, y: 1 }}
       className="justify-center items-center w-full pt-16 pb-16 rounded-b-3xl"
     >
       <Text className="text-4xl font-bold text-white font-mono mb-6">

@@ -28,7 +28,7 @@ persistQueryClient({
 export default function RootLayout() {
   return (
     <QueryClientProvider client={queryClient}>
-      <SafeAreaView style={{ flex: 1, backgroundColor: "#262626" }}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: "#171717" }}>
         <Stack>
           <Stack.Screen name="index" options={{ headerShown: false }} />
           <Stack.Screen name="mosques" options={{ headerShown: false }} />

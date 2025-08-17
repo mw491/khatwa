@@ -138,7 +138,7 @@ export default function MosquesScreen() {
       {/* Header */}
       <LinearGradient
         colors={["#171717", "#262626"]}
-        start={{ x: 0, y: 0 }}
+        start={{ x: 0, y: 0.3 }}
         end={{ x: 0, y: 1 }}
         className="justify-center items-center w-full pt-24 pb-16 rounded-b-3xl relative"
       >
