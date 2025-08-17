@@ -1,6 +1,9 @@
-{
+const IS_DEV = process.env.APP_VARIANT === 'development';
+console.log(IS_DEV ? "com.mw491.khatwadev" : "com.mw491.khatwa")
+
+export default {
   "expo": {
-    "name": "Khatwa",
+    "name": IS_DEV ? "Khatwa [Dev]" : "Khatwa",
     "slug": "khatwa",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -9,7 +12,7 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.mw491.khatwa",
+      "bundleIdentifier": IS_DEV ? "com.mw491.khatwadev" : "com.mw491.khatwa",
       "icon": {
         "dark": "./assets/icons/ios-dark.png",
         "light": "./assets/icons/ios-light.png",
@@ -23,7 +26,7 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.mw491.khatwa"
+      "package": IS_DEV ? "com.mw491.khatwadev" : "com.mw491.khatwa"
     },
     "web": {
       "bundler": "metro",
