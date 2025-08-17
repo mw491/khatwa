@@ -1,17 +1,17 @@
 import {
-  View,
-  Text,
-  TouchableOpacity,
-  ActivityIndicator,
-  Animated,
-} from "react-native";
-import { useEffect, useRef } from "react";
-import {
-  useTodayTimings,
   getCurrentOrNextPrayer,
+  useTodayTimings,
 } from "@/lib/hooks/useTodayTimings";
 import { useSelectedMosqueStore } from "@/lib/store/mosqueStore";
 import { router } from "expo-router";
+import { useEffect, useRef } from "react";
+import {
+  ActivityIndicator,
+  Animated,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 export default function Timings() {
   const { data: timings, isLoading, error } = useTodayTimings();
@@ -51,8 +51,8 @@ export default function Timings() {
   //       className={`flex-row justify-between rounded-xl p-4 border-2 border-transparent ${
   //         isCurrentOrNext
   //           ? isCurrent
-  //             ? "bg-emerald-600"
-  //             : "bg-neutral-700 border-emerald-400"
+  //             ? "bg-neutral-600"
+  //             : "bg-neutral-700 border-neutral-400"
   //           : "bg-neutral-700"
   //       }`}
   //     >
@@ -94,8 +94,8 @@ export default function Timings() {
         className={`rounded-xl p-4 border-2 flex-row items-center justify-between ${
           isCurrentOrNext
             ? isCurrent
-              ? "bg-emerald-600 border-emerald-400"
-              : "bg-neutral-700 border-emerald-400"
+              ? "bg-neutral-600 border-neutral-400"
+              : "bg-neutral-700 border-neutral-400"
             : "bg-neutral-700 border-neutral-700"
         }`}
       >
@@ -135,7 +135,7 @@ export default function Timings() {
   return (
     <View>
       <TouchableOpacity
-        className="bg-neutral-800 border-emerald-400 border-2 min-w-96 rounded-xl p-8 mt-[-32px] mb-5 elevation-xl"
+        className="bg-neutral-800 border-neutral-400 border-2 min-w-96 rounded-xl p-8 mt-[-32px] mb-5 elevation-xl"
         onPress={() => router.push("/mosques")}
       >
         {isLoading || !timings ? (

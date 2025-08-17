@@ -38,7 +38,7 @@ export default function Header() {
   };
 
   return (
-    <View className="bg-emerald-700 justify-center items-center w-full pt-16 pb-16 rounded-b-3xl">
+    <View className="bg-neutral-700 justify-center items-center w-full pt-16 pb-16 rounded-b-3xl">
       <Text className="text-4xl font-bold text-white font-mono mb-6">
         Prayer Times
       </Text>

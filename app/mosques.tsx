@@ -1,19 +1,19 @@
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  ActivityIndicator,
-  TextInput,
-} from "react-native";
 import { useTodayTimings } from "@/lib/hooks/useTodayTimings";
 import {
-  useSelectedMosqueStore,
   usePinnedMosquesStore,
+  useSelectedMosqueStore,
 } from "@/lib/store/mosqueStore";
-import { router } from "expo-router";
-import { useDeferredValue, useState, useMemo, useCallback } from "react";
-import { LegendList } from "@legendapp/list";
 import { Ionicons } from "@expo/vector-icons";
+import { LegendList } from "@legendapp/list";
+import { router } from "expo-router";
+import { useCallback, useDeferredValue, useMemo, useState } from "react";
+import {
+  ActivityIndicator,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 export default function MosquesScreen() {
   const { data: timings, isLoading, error } = useTodayTimings();
@@ -87,7 +87,7 @@ export default function MosquesScreen() {
       activeOpacity={0.5}
       className={`rounded-xl p-6 flex-row items-center gap-3 ${
         mosque._id === selectedMosqueID
-          ? "bg-emerald-600 border-2 border-emerald-400"
+          ? "bg-neutral-600 border-2 border-neutral-400"
           : "bg-neutral-700"
       }`}
     >
@@ -135,7 +135,7 @@ export default function MosquesScreen() {
   return (
     <View className="flex-1 bg-neutral-800">
       {/* Header */}
-      <View className="bg-emerald-700 justify-center items-center w-full pt-24 pb-16 rounded-b-3xl relative">
+      <View className="bg-neutral-700 justify-center items-center w-full pt-24 pb-16 rounded-b-3xl relative">
         <TouchableOpacity
           onPress={() => router.back()}
           className="absolute left-5 top-5 p-3 rounded-full bg-white/10"

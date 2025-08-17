@@ -1,9 +1,8 @@
-import { ScrollView, View, RefreshControl } from "react-native";
-import { useQueryClient } from "@tanstack/react-query";
-import DataTable from "@/app/components/DataTable";
-import Timings from "@/app/components/Timings";
 import Header from "@/app/components/Header";
+import Timings from "@/app/components/Timings";
+import { useQueryClient } from "@tanstack/react-query";
 import React from "react";
+import { RefreshControl, ScrollView, View } from "react-native";
 
 export default function Index() {
   const queryClient = useQueryClient();
@@ -27,8 +26,8 @@ export default function Index() {
         <RefreshControl
           refreshing={refreshing}
           onRefresh={onRefresh}
-          tintColor="#10b981" // emerald-500 color
-          colors={["#10b981"]} // for Android
+          tintColor="#525252" // neutral-600 color
+          colors={["#525252"]} // for Android
         />
       }
     >
