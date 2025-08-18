@@ -86,10 +86,8 @@ export default function MosquesScreen() {
     <TouchableOpacity
       onPress={() => handleMosqueSelect(mosque._id)}
       activeOpacity={0.5}
-      className={`rounded-xl p-6 flex-row items-center gap-3 ${
-        mosque._id === selectedMosqueID
-          ? "bg-neutral-600 border-2 border-neutral-400"
-          : "bg-neutral-700"
+      className={`bg-neutral-700 rounded-xl p-6 flex-row items-center gap-3 ${
+        mosque._id === selectedMosqueID ? "border-2 border-neutral-400" : ""
       }`}
     >
       <Text
