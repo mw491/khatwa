@@ -4,7 +4,7 @@ import {
 } from "@/lib/hooks/useTodayTimings";
 import { useSelectedMosqueStore } from "@/lib/store/mosqueStore";
 import { router } from "expo-router";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
   Animated,
@@ -19,6 +19,7 @@ export default function Timings() {
     (state) => state.selectedMosqueID
   );
   const timesOpacity = useRef(new Animated.Value(0)).current;
+  const [now, setNow] = useState(new Date());
 
   // Check if we have data (either fresh or cached)
   const hasData = !!timings;
@@ -37,10 +38,16 @@ export default function Timings() {
     }
   }, [hasData, timesOpacity]);
 
+  // Real-time tick so current/next prayer updates without reload
+  useEffect(() => {
+    const id = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(id);
+  }, []);
+
   const mosque = timings?.find((timing) => timing._id === selectedMosqueID);
   const prayerTimes = mosque?.prayer_times;
   const currentPrayer = prayerTimes
-    ? getCurrentOrNextPrayer(prayerTimes)
+    ? getCurrentOrNextPrayer(prayerTimes, now)
     : ({ name: "", isNext: false } as { name: string; isNext: boolean });
 
   // const renderPrayerRow = (
