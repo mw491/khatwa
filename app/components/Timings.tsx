@@ -147,7 +147,7 @@ export default function Timings() {
   return (
     <View>
       <TouchableOpacity
-        className="bg-neutral-800 border-neutral-400 border-2 min-w-96 rounded-xl p-8 mt-[-32px] mb-5 elevation-xl"
+        className="bg-neutral-800 border-neutral-400 border-2 max-w-96 rounded-xl p-8 mt-[-32px] mb-5 elevation-xl"
         onPress={() => router.push("/mosques")}
       >
         {shouldShowLoading ? (
