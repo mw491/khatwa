@@ -1,4 +1,4 @@
-import { useTodayTimings } from "@/lib/hooks/useTodayTimings";
+import { useTodayTimings, type Timings } from "@/lib/hooks/useTodayTimings";
 import {
   usePinnedMosquesStore,
   useSelectedMosqueStore,
@@ -86,13 +86,13 @@ export default function MosquesScreen() {
     router.back();
   };
 
-  const renderItem = ({ item: mosque }: { item: any }) => (
+  const renderItem = ({ item: mosque }: { item: Timings }) => (
     <TouchableOpacity
       onPress={() => handleMosqueSelect(mosque._id)}
       activeOpacity={0.5}
       className={`bg-gray-100 dark:bg-neutral-700 rounded-xl p-6 flex-row items-center gap-3 ${mosque._id === selectedMosqueID
-          ? "border-2 border-gray-300 dark:border-neutral-400"
-          : ""
+        ? "border-2 border-gray-300 dark:border-neutral-400"
+        : ""
         }`}
     >
       <Text

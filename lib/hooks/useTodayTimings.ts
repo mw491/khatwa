@@ -75,10 +75,10 @@ export function getCurrentOrNextPrayer(
       return minutes === null
         ? null
         : {
-            name: prayer.name,
-            time: prayer.time,
-            minutes,
-          };
+          name: prayer.name,
+          time: prayer.time,
+          minutes,
+        };
     })
     .filter(
       (p): p is { name: string; time: PrayerTime; minutes: number } =>
@@ -166,9 +166,25 @@ export function useTodayTimings() {
   return useQuery<Timings[]>({
     queryKey: ["dailyData", today],
     queryFn: async () => {
-      const res = await fetch("https://khatwa-backend.vercel.app/");
-      if (!res.ok) throw new Error("Network error");
-      return res.json();
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
+
+        const res = await fetch("https://khatwa-backend.vercel.app/", {
+          signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        return res.json();
+      } catch (error) {
+        if (error instanceof Error) {
+          throw new Error(`Failed to fetch: ${error.message}`);
+        }
+        throw new Error('An unknown error occurred');
+      }
     },
     // Keep data fresh until the next local midnight
     staleTime: msUntilMidnight,

@@ -27,15 +27,22 @@ export default function Timings() {
   const shouldShowLoading = isLoading && !hasData;
 
   useEffect(() => {
+    let animation: Animated.CompositeAnimation | null = null;
     if (hasData) {
-      Animated.timing(timesOpacity, {
+      animation = Animated.timing(timesOpacity, {
         toValue: 1,
         duration: 250,
         useNativeDriver: true,
-      }).start();
+      });
+      animation.start();
     } else {
       timesOpacity.setValue(0);
     }
+    return () => {
+      if (animation) {
+        animation.stop();
+      }
+    };
   }, [hasData, timesOpacity]);
 
   // Real-time tick so current/next prayer updates without reload
