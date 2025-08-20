@@ -95,7 +95,7 @@ export default function DataTable() {
   if (loading) {
     return (
       <View className="mt-10 w-4/5">
-        <Text className="text-white text-center">Loading prayer times...</Text>
+        <Text className="text-gray-900 dark:text-white text-center">Loading prayer times...</Text>
       </View>
     );
   }
@@ -103,15 +103,15 @@ export default function DataTable() {
   if (error) {
     return (
       <View className="mt-10 w-4/5">
-        <Text className="text-white text-center">{error}</Text>
+        <Text className="text-red-600 dark:text-red-400 text-center">{error}</Text>
       </View>
     );
   }
 
   return (
     <View className="w-4/5">
-      <View className="bg-neutral-700 rounded-xl p-4 mt-[-16px] mb-4 elevation-lg">
-        <Text className="text-2xl text-white text-center font-semibold">
+      <View className="bg-white dark:bg-neutral-700 rounded-xl p-4 mt-[-16px] mb-4 elevation-lg">
+        <Text className="text-2xl text-gray-900 dark:text-white text-center font-semibold">
           {mosque}
         </Text>
       </View>
@@ -119,13 +119,13 @@ export default function DataTable() {
       {/* Header */}
       <View className="flex-row">
         <View className="flex-1 border border-transparent p-6">
-          <Text className="text-white text-center font-semibold">Prayer</Text>
+          <Text className="text-gray-900 dark:text-white text-center font-semibold">Prayer</Text>
         </View>
         <View className="flex-1 border border-transparent p-6">
-          <Text className="text-white text-center font-semibold">Athan</Text>
+          <Text className="text-gray-900 dark:text-white text-center font-semibold">Athan</Text>
         </View>
         <View className="flex-1 border border-transparent p-6">
-          <Text className="text-white text-center font-semibold">Jamaat</Text>
+          <Text className="text-gray-900 dark:text-white text-center font-semibold">Jamaat</Text>
         </View>
       </View>
 
@@ -133,13 +133,13 @@ export default function DataTable() {
       {prayerTimes.map((prayer, index) => (
         <View key={index} className="flex-row">
           <View className="flex-1 border border-transparent p-6">
-            <Text className="text-white text-center">{prayer.prayer}</Text>
+            <Text className="text-gray-900 dark:text-white text-center">{prayer.prayer}</Text>
           </View>
           <View className="flex-1 border border-transparent p-6">
-            <Text className="text-white text-center">{prayer.athan}</Text>
+            <Text className="text-gray-900 dark:text-white text-center">{prayer.athan}</Text>
           </View>
           <View className="flex-1 border border-transparent p-6">
-            <Text className="text-white text-center">{prayer.jamaat}</Text>
+            <Text className="text-gray-900 dark:text-white text-center">{prayer.jamaat}</Text>
           </View>
         </View>
       ))}

@@ -2,9 +2,10 @@ import Header from "@/app/components/Header";
 import Timings from "@/app/components/Timings";
 import { useQueryClient } from "@tanstack/react-query";
 import React from "react";
-import { RefreshControl, ScrollView, View } from "react-native";
+import { RefreshControl, ScrollView, View, useColorScheme } from "react-native";
 
 export default function Index() {
+  const colorScheme = useColorScheme();
   const queryClient = useQueryClient();
   const [refreshing, setRefreshing] = React.useState(false);
 
@@ -19,19 +20,19 @@ export default function Index() {
 
   return (
     <ScrollView
-      className="bg-neutral-800"
+      className="bg-white dark:bg-neutral-900"
       contentContainerStyle={{ flexGrow: 1 }}
       showsVerticalScrollIndicator={false}
       refreshControl={
         <RefreshControl
           refreshing={refreshing}
           onRefresh={onRefresh}
-          tintColor="#525252" // neutral-600 color
-          colors={["#525252"]} // for Android
+          tintColor={colorScheme === "dark" ? "#525252" : "#6b7280"}
+          colors={[colorScheme === "dark" ? "#525252" : "#6b7280"]}
         />
       }
     >
-      <View className="flex-1 pb-8 justify-start items-center bg-neutral-800">
+      <View className="flex-1 pb-8 justify-start items-center bg-white dark:bg-neutral-900">
         <Header />
         {/* <DataTable /> */}
         <Timings />

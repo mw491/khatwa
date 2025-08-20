@@ -4,6 +4,8 @@ import { Stack } from "expo-router";
 import { mmkvPersister } from "@/lib/storage/queryPersist";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { persistQueryClient } from "@tanstack/react-query-persist-client";
+import { StatusBar } from "expo-status-bar";
+import { useColorScheme } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const queryClient = new QueryClient({
@@ -26,9 +28,13 @@ persistQueryClient({
 });
 
 export default function RootLayout() {
+  const colorScheme = useColorScheme();
+  const isDark = colorScheme === "dark";
+  const topGradientColor = isDark ? "#262626" : "#d1d5db";
   return (
     <QueryClientProvider client={queryClient}>
-      <SafeAreaView style={{ flex: 1, backgroundColor: "#171717" }}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: topGradientColor }}>
+        <StatusBar style={isDark ? "light" : "dark"} animated />
         <Stack>
           <Stack.Screen name="index" options={{ headerShown: false }} />
           <Stack.Screen name="mosques" options={{ headerShown: false }} />

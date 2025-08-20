@@ -2,7 +2,7 @@ import { useTodayTimings, type PrayerTimes } from "@/lib/hooks/useTodayTimings";
 import { useSelectedMosqueStore } from "@/lib/store/mosqueStore";
 import { LinearGradient } from "expo-linear-gradient";
 import { useEffect, useState } from "react";
-import { Text } from "react-native";
+import { Text, useColorScheme } from "react-native";
 
 // Helpers for computing real-time delta using only jamaat times
 const parseJamaatToDate = (time: string | null, base: Date): Date | null => {
@@ -68,6 +68,7 @@ const capitalize = (s: string) =>
 
 export default function Header() {
   const [currentTime, setCurrentTime] = useState(new Date());
+  const colorScheme = useColorScheme();
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -113,21 +114,23 @@ export default function Header() {
 
   return (
     <LinearGradient
-      colors={["#171717", "#262626"]}
+      colors={
+        colorScheme === "dark" ? ["#262626", "#171717"] : ["#d1d5db", "#ffffff"]
+      }
       start={{ x: 0, y: 0.3 }}
       end={{ x: 0, y: 1 }}
       className="justify-center items-center w-full pt-16 pb-16 rounded-b-3xl"
     >
-      <Text className="text-4xl font-bold text-white font-mono mb-6">
+      <Text className="text-4xl font-bold text-gray-900 dark:text-white font-mono mb-6">
         Prayer Times
       </Text>
-      <Text className="text-2xl text-white/80 font-mono mb-2">
+      <Text className="text-2xl text-gray-600 dark:text-white/80 font-mono mb-2">
         {formatGregorianDate(currentTime)}
       </Text>
-      <Text className="text-2xl text-white/80 font-mono mb-2">
+      <Text className="text-2xl text-gray-600 dark:text-white/80 font-mono mb-2">
         {formatHijriDate(currentTime)}
       </Text>
-      <Text className="text-2xl text-white font-mono font-bold">
+      <Text className="text-2xl text-gray-900 dark:text-white font-mono font-bold">
         {deltaLine}
       </Text>
     </LinearGradient>
