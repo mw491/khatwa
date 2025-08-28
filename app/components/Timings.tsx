@@ -91,8 +91,10 @@ export default function Timings() {
 
   const renderJumahCard = (displayName: string, time: string) => {
     return (
-      <View className="bg-gray-100 dark:bg-neutral-700 flex-row justify-between rounded-xl p-4 border-2 border-gray-200 dark:border-transparent">
-        <Text className="text-2xl text-gray-900 dark:text-white">{displayName}</Text>
+      <View className="bg-gray-100 dark:bg-neutral-800 flex-row justify-between rounded-3xl p-4 border-2 border-gray-200 dark:border-neutral-700">
+        <Text className="text-2xl text-gray-900 dark:text-white">
+          {displayName}
+        </Text>
         <Text className="text-2xl text-gray-900 dark:text-white">{time}</Text>
       </View>
     );
@@ -110,14 +112,17 @@ export default function Timings() {
 
     return (
       <View
-        className={`rounded-xl p-4 border-2 flex-row items-center justify-between ${isCurrentOrNext
-          ? isCurrent
-            ? "bg-gray-200 dark:bg-neutral-600 border-gray-300 dark:border-neutral-400"
-            : "bg-gray-100 dark:bg-neutral-700 border-gray-300 dark:border-neutral-400"
-          : "bg-gray-100 dark:bg-neutral-700 border-gray-200 dark:border-neutral-700"
-          }`}
+        className={`rounded-3xl p-4 border-2 flex-row items-center justify-between ${
+          isCurrentOrNext
+            ? isCurrent
+              ? "bg-gray-200 dark:bg-neutral-900 border-gray-300 dark:border-neutral-400"
+              : "bg-gray-100 dark:bg-neutral-800 border-gray-300 dark:border-neutral-400"
+            : "bg-gray-100 dark:bg-neutral-800 border-gray-200 dark:border-neutral-700"
+        }`}
       >
-        <Text className={`text-3xl font-bold text-gray-900 dark:text-white`}>{displayName}</Text>
+        <Text className={`text-3xl font-bold text-gray-900 dark:text-white`}>
+          {displayName}
+        </Text>
         <View className="flex-row gap-5">
           <View className="items-center">
             <Text className="text-md text-gray-700 dark:text-white">Athan</Text>
@@ -133,7 +138,9 @@ export default function Timings() {
             )}
           </View>
           <View className="items-center">
-            <Text className="text-md text-gray-700 dark:text-white font-bold">Iqamah</Text>
+            <Text className="text-md text-gray-700 dark:text-white font-bold">
+              Iqamah
+            </Text>
             {loading ? (
               <View className="h-6 w-20 bg-gray-200 dark:bg-neutral-600 rounded mt-1" />
             ) : (
@@ -153,7 +160,7 @@ export default function Timings() {
   return (
     <View>
       <TouchableOpacity
-        className="bg-white dark:bg-neutral-800 border-gray-300 dark:border-neutral-400 border-2 max-w-96 rounded-xl p-8 mt-[-32px] mb-5 elevation-xl"
+        className="bg-white dark:bg-neutral-800 border-gray-300 dark:border-neutral-400 border-2 max-w-96 rounded-3xl p-8 mt-[-32px] mb-5 elevation-xl"
         onPress={() => router.push("/mosques")}
       >
         {shouldShowLoading ? (
@@ -172,7 +179,7 @@ export default function Timings() {
 
       {isError && error && (
         <View className="w-full items-center mb-5">
-          <View className="bg-white dark:bg-neutral-800 border-red-400 border-2 min-w-96 rounded-xl p-4 items-center">
+          <View className="bg-white dark:bg-neutral-800 border-red-400 border-2 min-w-96 rounded-3xl p-4 items-center">
             <Text className="text-red-600 dark:text-red-400 text-center">{`Error: ${error?.message ?? "Unable to load"}`}</Text>
           </View>
         </View>

@@ -18,6 +18,7 @@ import {
 } from "react";
 import {
   ActivityIndicator,
+  Linking,
   Text,
   TextInput,
   TouchableOpacity,
@@ -98,7 +99,7 @@ export default function MosquesScreen() {
   }, [sortedTimings, deferredQuery, selectedMosqueID, pinnedMosques]);
 
   const renderLoadingCard = () => (
-    <View className="rounded-xl p-6 bg-white dark:bg-neutral-700 items-center">
+    <View className="rounded-3xl p-6 bg-white dark:bg-neutral-800 items-center">
       <ActivityIndicator size="large" color="#10b981" />
       <Text className="text-gray-900 dark:text-white text-center mt-3">
         Loading...
@@ -106,7 +107,7 @@ export default function MosquesScreen() {
     </View>
   );
   const renderErrorCard = (errorMessage: string) => (
-    <View className="rounded-xl p-6 bg-white dark:bg-neutral-700 items-center border-2 border-red-400">
+    <View className="rounded-3xl p-6 bg-white dark:bg-neutral-700 items-center border-2 border-red-400">
       <Text className="text-red-600 dark:text-red-400 text-center">{`Error: ${errorMessage ?? "Unable to load"}`}</Text>
     </View>
   );
@@ -120,10 +121,10 @@ export default function MosquesScreen() {
     <TouchableOpacity
       onPress={() => handleMosqueSelect(mosque._id)}
       activeOpacity={0.5}
-      className={`bg-gray-100 dark:bg-neutral-700 rounded-xl p-6 flex-row items-center gap-3 ${
+      className={`bg-gray-100 dark:bg-neutral-800 rounded-3xl p-6 flex-row items-center gap-3 elevation-lg ${
         mosque._id === selectedMosqueID
           ? "border-2 border-gray-300 dark:border-neutral-400"
-          : ""
+          : "border border-gray-200 dark:border-neutral-600"
       }`}
     >
       <View className="gap-2 flex-1">
@@ -133,32 +134,59 @@ export default function MosquesScreen() {
         >
           {mosque.mosque_name}
         </Text>
-        <Text
-          className={`text-md text-left text-gray-900/75 dark:text-white/75`}
-        >
-          {mosque.distanceM != null
-            ? mosque.distanceM >= 1000
-              ? (mosque.distanceM / 1000).toFixed(2) + " km"
-              : mosque.distanceM + " m"
-            : ""}
-        </Text>
+        {!!mosque.postcode && (
+          <Text
+            className={`text-sm text-left text-gray-700 dark:text-white/70`}
+            numberOfLines={1}
+          >
+            {mosque.postcode}
+          </Text>
+        )}
+        <View className="flex-row items-center gap-5 mt-1">
+          <View className="px-2 py-1 rounded-full bg-gray-200 dark:bg-neutral-700">
+            <Text className="text-xs text-gray-900 dark:text-white">
+              {mosque.distanceM != null
+                ? mosque.distanceM >= 1000
+                  ? (mosque.distanceM / 1000).toFixed(2) + " km"
+                  : mosque.distanceM + " m"
+                : ""}
+            </Text>
+          </View>
+          <TouchableOpacity
+            onPress={async () => {
+              try {
+                const url = mosque.google_maps_link;
+                await Linking.openURL(url);
+              } catch (err) {
+                alert("Failed to open the map link due to error: " + err);
+              }
+            }}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          >
+            <Ionicons
+              name="map"
+              size={18}
+              color={colorScheme === "dark" ? "#ffffff" : "#111827"}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => togglePinnedMosque(mosque._id)}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          >
+            <Ionicons
+              name="star"
+              size={18}
+              color={
+                pinnedMosques.includes(mosque._id)
+                  ? "#facc15"
+                  : colorScheme === "dark"
+                    ? "#ffffff"
+                    : "#9ca3af"
+              }
+            />
+          </TouchableOpacity>
+        </View>
       </View>
-      <TouchableOpacity
-        onPress={() => togglePinnedMosque(mosque._id)}
-        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-      >
-        <Ionicons
-          name="star"
-          size={24}
-          color={
-            pinnedMosques.includes(mosque._id)
-              ? "#facc15"
-              : colorScheme === "dark"
-                ? "#ffffff"
-                : "#9ca3af"
-          }
-        />
-      </TouchableOpacity>
     </TouchableOpacity>
   );
 
@@ -169,16 +197,23 @@ export default function MosquesScreen() {
   );
 
   // Memoize the ListHeaderComponent
-  const ListHeaderComponent = useCallback(
-    () => (
+  const ListHeaderComponent = useCallback(() => {
+    const showLoading = isLoading || !coords;
+    const showFetchError = !isLoading && !!fetchError;
+    const showLocationError = !isLoading && !!locationError;
+
+    const hasContent = showLoading || showFetchError || showLocationError;
+
+    if (!hasContent) return null;
+
+    return (
       <View style={{ marginBottom: 16 }}>
-        {(isLoading || !coords) && renderLoadingCard()}
-        {!isLoading && fetchError && renderErrorCard(fetchError.message)}
-        {!isLoading && locationError && renderErrorCard(locationError)}
+        {showLoading && renderLoadingCard()}
+        {showFetchError && renderErrorCard(fetchError?.message)}
+        {showLocationError && renderErrorCard(locationError as string)}
       </View>
-    ),
-    [coords, isLoading, fetchError, locationError]
-  );
+    );
+  }, [coords, isLoading, fetchError, locationError]);
 
   // Memoize the keyExtractor
   const keyExtractor = useCallback((item: any) => item._id, []);
@@ -223,7 +258,7 @@ export default function MosquesScreen() {
         autoCapitalize="none"
         autoCorrect={false}
         clearButtonMode="while-editing"
-        className="bg-gray-100 text-gray-900 dark:bg-neutral-700 dark:text-white rounded-xl my-5 mx-4 p-4"
+        className="bg-gray-100 text-gray-900 dark:bg-neutral-800 dark:text-white rounded-3xl my-4 mx-4 p-4"
       />
 
       {/* Mosque Cards */}
