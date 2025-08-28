@@ -127,10 +127,10 @@ export default function Header() {
       <Text className="text-2xl text-gray-600 dark:text-white/80 font-mono mb-2">
         {formatGregorianDate(currentTime)}
       </Text>
-      <Text className="text-2xl text-gray-600 dark:text-white/80 font-mono mb-2">
+      <Text className="text-2xl text-gray-600 dark:text-white/80 font-mono mb-6">
         {formatHijriDate(currentTime)}
       </Text>
-      <Text className="text-2xl text-gray-900 dark:text-white font-mono font-bold">
+      <Text className="py-3 px-6 text-xl border-2 text-gray-900 dark:text-white border-gray-300 dark:border-neutral-400 rounded-3xl font-mono font-semibold">
         {deltaLine}
       </Text>
     </LinearGradient>

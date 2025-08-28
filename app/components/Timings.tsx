@@ -115,8 +115,8 @@ export default function Timings() {
         className={`rounded-3xl p-4 border-2 flex-row items-center justify-between ${
           isCurrentOrNext
             ? isCurrent
-              ? "bg-gray-200 dark:bg-neutral-900 border-gray-300 dark:border-neutral-400"
-              : "bg-gray-100 dark:bg-neutral-800 border-gray-300 dark:border-neutral-400"
+              ? "bg-gray-200 dark:bg-neutral-900 border-gray-400 dark:border-neutral-400"
+              : "bg-gray-100 dark:bg-neutral-800 border-gray-400 dark:border-neutral-400"
             : "bg-gray-100 dark:bg-neutral-800 border-gray-200 dark:border-neutral-700"
         }`}
       >
