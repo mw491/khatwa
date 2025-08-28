@@ -1,13 +1,21 @@
 import { useTodayTimings, type Timings } from "@/lib/hooks/useTodayTimings";
+import { useLiveLocation } from "@/lib/hooks/useUserLocation";
 import {
   usePinnedMosquesStore,
   useSelectedMosqueStore,
 } from "@/lib/store/mosqueStore";
+import calculateDistance from "@/lib/utils/calculateDistance";
 import { Ionicons } from "@expo/vector-icons";
 import { LegendList } from "@legendapp/list";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
-import { useCallback, useDeferredValue, useMemo, useState } from "react";
+import {
+  useCallback,
+  useDeferredValue,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import {
   ActivityIndicator,
   Text,
@@ -19,13 +27,35 @@ import {
 
 export default function MosquesScreen() {
   const colorScheme = useColorScheme();
-  const { data: timings, isLoading, error } = useTodayTimings();
+  const { data: timings, isLoading, error: fetchError } = useTodayTimings();
+
   const selectedMosqueID = useSelectedMosqueStore(
     (state) => state.selectedMosqueID
   );
   const setselectedMosqueID = useSelectedMosqueStore(
     (state) => state.setSelectedMosqueID
   );
+
+  const { coords, error: locationError } = useLiveLocation();
+  const [sortedTimings, setSortedTimings] = useState<Timings[] | null>(null);
+
+  useEffect(() => {
+    if (!timings || !coords) return;
+    const dists = timings
+      .map((mosque) => ({
+        ...mosque,
+        distanceM: Math.round(
+          calculateDistance(
+            coords.latitude,
+            coords.longitude,
+            mosque.coordinates.lat,
+            mosque.coordinates.long
+          )
+        ),
+      }))
+      .sort((a, b) => a.distanceM - b.distanceM);
+    setSortedTimings(dists);
+  }, [coords, timings]);
 
   const pinnedMosques = usePinnedMosquesStore((state) => state.pinnedMosques);
   const togglePinnedMosque = usePinnedMosquesStore(
@@ -37,14 +67,14 @@ export default function MosquesScreen() {
 
   // Memoize filtered and sorted data to prevent recalculation
   const filteredTimings = useMemo(() => {
-    if (!timings) return [];
+    if (!timings || !sortedTimings) return [];
 
-    let filtered = timings;
+    let filtered = sortedTimings;
 
     // Apply search filter if query exists
     if (deferredQuery) {
       const queryLower = deferredQuery.toLowerCase();
-      filtered = timings.filter((timing) =>
+      filtered = sortedTimings.filter((timing) =>
         timing.mosque_name.toLowerCase().includes(queryLower)
       );
     }
@@ -65,7 +95,7 @@ export default function MosquesScreen() {
       // Rest remain in original order
       return 0;
     });
-  }, [timings, deferredQuery, selectedMosqueID, pinnedMosques]);
+  }, [sortedTimings, deferredQuery, selectedMosqueID, pinnedMosques]);
 
   const renderLoadingCard = () => (
     <View className="rounded-xl p-6 bg-white dark:bg-neutral-700 items-center">
@@ -75,9 +105,9 @@ export default function MosquesScreen() {
       </Text>
     </View>
   );
-  const renderErrorCard = () => (
+  const renderErrorCard = (errorMessage: string) => (
     <View className="rounded-xl p-6 bg-white dark:bg-neutral-700 items-center border-2 border-red-400">
-      <Text className="text-red-600 dark:text-red-400 text-center">{`Error: ${error?.message ?? "Unable to load"}`}</Text>
+      <Text className="text-red-600 dark:text-red-400 text-center">{`Error: ${errorMessage ?? "Unable to load"}`}</Text>
     </View>
   );
 
@@ -90,17 +120,29 @@ export default function MosquesScreen() {
     <TouchableOpacity
       onPress={() => handleMosqueSelect(mosque._id)}
       activeOpacity={0.5}
-      className={`bg-gray-100 dark:bg-neutral-700 rounded-xl p-6 flex-row items-center gap-3 ${mosque._id === selectedMosqueID
-        ? "border-2 border-gray-300 dark:border-neutral-400"
-        : ""
-        }`}
+      className={`bg-gray-100 dark:bg-neutral-700 rounded-xl p-6 flex-row items-center gap-3 ${
+        mosque._id === selectedMosqueID
+          ? "border-2 border-gray-300 dark:border-neutral-400"
+          : ""
+      }`}
     >
-      <Text
-        className={`text-2xl font-semibold text-left flex-1 text-gray-900 dark:text-white`}
-        numberOfLines={3}
-      >
-        {mosque.mosque_name}
-      </Text>
+      <View className="gap-2 flex-1">
+        <Text
+          className={`text-2xl font-semibold text-left text-gray-900 dark:text-white`}
+          numberOfLines={3}
+        >
+          {mosque.mosque_name}
+        </Text>
+        <Text
+          className={`text-md text-left text-gray-900/75 dark:text-white/75`}
+        >
+          {mosque.distanceM != null
+            ? mosque.distanceM >= 1000
+              ? (mosque.distanceM / 1000).toFixed(2) + " km"
+              : mosque.distanceM + " m"
+            : ""}
+        </Text>
+      </View>
       <TouchableOpacity
         onPress={() => togglePinnedMosque(mosque._id)}
         hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
@@ -130,11 +172,12 @@ export default function MosquesScreen() {
   const ListHeaderComponent = useCallback(
     () => (
       <View style={{ marginBottom: 16 }}>
-        {isLoading && renderLoadingCard()}
-        {!isLoading && error && renderErrorCard()}
+        {(isLoading || !coords) && renderLoadingCard()}
+        {!isLoading && fetchError && renderErrorCard(fetchError.message)}
+        {!isLoading && locationError && renderErrorCard(locationError)}
       </View>
     ),
-    [isLoading, error]
+    [coords, isLoading, fetchError, locationError]
   );
 
   // Memoize the keyExtractor

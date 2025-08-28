@@ -9,6 +9,7 @@ export interface Timings {
   google_maps_link: string;
   website: string;
   prayer_times: PrayerTimes;
+  distanceM?: number;
 }
 
 export interface PrayerTimes {
