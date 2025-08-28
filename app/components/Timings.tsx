@@ -1,3 +1,4 @@
+import { useHaptics } from "@/lib/hooks/useHaptics";
 import {
   getCurrentOrNextPrayer,
   useTodayTimings,
@@ -20,11 +21,19 @@ export default function Timings() {
   );
   const timesOpacity = useRef(new Animated.Value(0)).current;
   const [now, setNow] = useState(new Date());
+  const haptics = useHaptics();
 
   // Check if we have data (either fresh or cached)
   const hasData = !!timings;
   // Only show loading if we have no data at all
   const shouldShowLoading = isLoading && !hasData;
+
+  // Add haptic feedback for errors
+  useEffect(() => {
+    if (isError && error) {
+      haptics.error();
+    }
+  }, [isError, error, haptics]);
 
   useEffect(() => {
     let animation: Animated.CompositeAnimation | null = null;
@@ -161,7 +170,10 @@ export default function Timings() {
     <View>
       <TouchableOpacity
         className="bg-white dark:bg-neutral-800 border-gray-300 dark:border-neutral-400 border-2 max-w-96 rounded-3xl p-8 mt-[-32px] mb-5 elevation-xl"
-        onPress={() => router.push("/mosques")}
+        onPress={() => {
+          haptics.light();
+          router.push("/mosques");
+        }}
       >
         {shouldShowLoading ? (
           <View className="flex-row items-center justify-center">

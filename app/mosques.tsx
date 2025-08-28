@@ -1,3 +1,4 @@
+import { useHaptics } from "@/lib/hooks/useHaptics";
 import { useTodayTimings, type Timings } from "@/lib/hooks/useTodayTimings";
 import { useLiveLocation } from "@/lib/hooks/useUserLocation";
 import {
@@ -29,6 +30,7 @@ import {
 export default function MosquesScreen() {
   const colorScheme = useColorScheme();
   const { data: timings, isLoading, error: fetchError } = useTodayTimings();
+  const haptics = useHaptics();
 
   const selectedMosqueID = useSelectedMosqueStore(
     (state) => state.selectedMosqueID
@@ -113,6 +115,7 @@ export default function MosquesScreen() {
   );
 
   const handleMosqueSelect = (id: string) => {
+    haptics.success();
     setselectedMosqueID(id);
     router.back();
   };
@@ -155,6 +158,7 @@ export default function MosquesScreen() {
           <TouchableOpacity
             onPress={async () => {
               try {
+                haptics.light();
                 const url = mosque.google_maps_link;
                 await Linking.openURL(url);
               } catch (err) {
@@ -170,7 +174,15 @@ export default function MosquesScreen() {
             />
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => togglePinnedMosque(mosque._id)}
+            onPress={() => {
+              const isCurrentlyPinned = pinnedMosques.includes(mosque._id);
+              if (isCurrentlyPinned) {
+                haptics.light(); // Light feedback for unpinning
+              } else {
+                haptics.success(); // Success feedback for pinning
+              }
+              togglePinnedMosque(mosque._id);
+            }}
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
           >
             <Ionicons
@@ -215,6 +227,16 @@ export default function MosquesScreen() {
     );
   }, [coords, isLoading, fetchError, locationError]);
 
+  // Add haptic feedback for errors
+  useEffect(() => {
+    if (fetchError) {
+      haptics.error();
+    }
+    if (locationError) {
+      haptics.warning();
+    }
+  }, [fetchError, locationError, haptics]);
+
   // Memoize the keyExtractor
   const keyExtractor = useCallback((item: any) => item._id, []);
 
@@ -232,7 +254,10 @@ export default function MosquesScreen() {
         className="justify-center items-center w-full pt-24 pb-16 rounded-b-3xl relative"
       >
         <TouchableOpacity
-          onPress={() => router.back()}
+          onPress={() => {
+            haptics.light();
+            router.back();
+          }}
           className="absolute left-5 top-5 p-3 rounded-full bg-black/10 dark:bg-white/10"
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
@@ -252,7 +277,13 @@ export default function MosquesScreen() {
 
       <TextInput
         value={query}
-        onChangeText={setQuery}
+        onChangeText={(text) => {
+          // Add haptic feedback when clearing the search
+          if (query && !text) {
+            haptics.light();
+          }
+          setQuery(text);
+        }}
         placeholder="Search mosques..."
         placeholderTextColor={colorScheme === "dark" ? "#d4d4d8" : "#9ca3af"}
         autoCapitalize="none"
