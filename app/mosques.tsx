@@ -10,13 +10,8 @@ import { Ionicons } from "@expo/vector-icons";
 import { LegendList } from "@legendapp/list";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
-import {
-  useCallback,
-  useDeferredValue,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import Fuse from "fuse.js";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
   Linking,
@@ -26,6 +21,7 @@ import {
   View,
   useColorScheme,
 } from "react-native";
+import { useDebounce } from "use-debounce";
 
 export default function MosquesScreen() {
   const colorScheme = useColorScheme();
@@ -66,24 +62,28 @@ export default function MosquesScreen() {
   );
 
   const [query, setQuery] = useState("");
-  const deferredQuery = useDeferredValue(query);
+  const [debouncedQuery] = useDebounce(query, 300);
+
+  const fuse = useMemo(() => {
+    if (!sortedTimings) return null;
+    return new Fuse(sortedTimings, {
+      keys: ["mosque_name", "postcode"],
+      includeScore: true,
+      threshold: 0.4,
+    });
+  }, [sortedTimings]);
 
   // Memoize filtered and sorted data to prevent recalculation
   const filteredTimings = useMemo(() => {
-    if (!timings || !sortedTimings) return [];
+    if (!sortedTimings) return [];
 
-    let filtered = sortedTimings;
-
-    // Apply search filter if query exists
-    if (deferredQuery) {
-      const queryLower = deferredQuery.toLowerCase();
-      filtered = sortedTimings.filter((timing) =>
-        timing.mosque_name.toLowerCase().includes(queryLower)
-      );
+    if (debouncedQuery && fuse) {
+      const results = fuse.search(debouncedQuery);
+      return results.map((result) => result.item);
     }
 
-    // Sort: selected mosque first, then pinned mosques, then the rest
-    return filtered.sort((a, b) => {
+    // When no search query, sort by selected, then pinned, then distance
+    return [...sortedTimings].sort((a, b) => {
       // Selected mosque comes first
       if (a._id === selectedMosqueID) return -1;
       if (b._id === selectedMosqueID) return 1;
@@ -95,10 +95,10 @@ export default function MosquesScreen() {
       if (aIsPinned && !bIsPinned) return -1;
       if (!aIsPinned && bIsPinned) return 1;
 
-      // Rest remain in original order
+      // The rest are already sorted by distance
       return 0;
     });
-  }, [sortedTimings, deferredQuery, selectedMosqueID, pinnedMosques]);
+  }, [sortedTimings, debouncedQuery, selectedMosqueID, pinnedMosques, fuse]);
 
   const renderLoadingCard = () => (
     <View className="rounded-3xl p-6 bg-white dark:bg-neutral-800 items-center">
@@ -124,11 +124,10 @@ export default function MosquesScreen() {
     <TouchableOpacity
       onPress={() => handleMosqueSelect(mosque._id)}
       activeOpacity={0.5}
-      className={`bg-gray-100 dark:bg-neutral-800 rounded-3xl p-6 flex-row items-center gap-3 elevation-lg ${
-        mosque._id === selectedMosqueID
+      className={`bg-gray-100 dark:bg-neutral-800 rounded-3xl p-6 flex-row items-center gap-3 elevation-lg ${mosque._id === selectedMosqueID
           ? "border-2 border-gray-300 dark:border-neutral-400"
           : "border border-gray-200 dark:border-neutral-600"
-      }`}
+        }`}
     >
       <View className="gap-2 flex-1">
         <Text
@@ -275,22 +274,32 @@ export default function MosquesScreen() {
         </Text>
       </LinearGradient>
 
-      <TextInput
-        value={query}
-        onChangeText={(text) => {
-          // Add haptic feedback when clearing the search
-          if (query && !text) {
-            haptics.light();
-          }
-          setQuery(text);
-        }}
-        placeholder="Search mosques..."
-        placeholderTextColor={colorScheme === "dark" ? "#d4d4d8" : "#9ca3af"}
-        autoCapitalize="none"
-        autoCorrect={false}
-        clearButtonMode="while-editing"
-        className="bg-gray-100 text-gray-900 dark:bg-neutral-800 dark:text-white rounded-3xl my-4 mx-4 p-4"
-      />
+      <View className="flex-row items-center bg-gray-100 dark:bg-neutral-800 rounded-3xl my-4 mx-4 p-4">
+        <TextInput
+          value={query}
+          onChangeText={setQuery}
+          placeholder="Search mosques..."
+          placeholderTextColor={colorScheme === "dark" ? "#d4d4d8" : "#9ca3af"}
+          autoCapitalize="none"
+          autoCorrect={false}
+          className="flex-1 text-gray-900 dark:text-white"
+        />
+        {query.length > 0 && (
+          <TouchableOpacity
+            onPress={() => {
+              setQuery("");
+              haptics.light();
+            }}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          >
+            <Ionicons
+              name="close-circle"
+              size={20}
+              color={colorScheme === "dark" ? "#9ca3af" : "#6b7280"}
+            />
+          </TouchableOpacity>
+        )}
+      </View>
 
       {/* Mosque Cards */}
       <LegendList
