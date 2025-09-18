@@ -31,18 +31,20 @@ persistQueryClient({
 export default function RootLayout() {
   const colorScheme = useColorScheme();
   const isDark = colorScheme === "dark";
-  const topGradientColor = isDark ? "#262626" : "#d1d5db";
+
   return (
     <QueryClientProvider client={queryClient}>
       <PostHogProvider
         apiKey="phc_sJHstC8XmssuaL5xYh4A7EKETH8xps5Joi1KZ1hiXCp"
         options={{
-          host: 'https://eu.i.posthog.com',
+          host: "https://eu.i.posthog.com",
           // enableSessionReplay: true,
         }}
         autocapture
       >
-        <SafeAreaView style={{ flex: 1, backgroundColor: topGradientColor }}>
+        <SafeAreaView
+          style={{ flex: 1, backgroundColor: isDark ? "#171717" : "#ffffff" }}
+        >
           <StatusBar style={isDark ? "light" : "dark"} animated />
           <Stack>
             <Stack.Screen name="index" options={{ headerShown: false }} />

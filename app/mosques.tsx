@@ -8,7 +8,6 @@ import {
 import calculateDistance from "@/lib/utils/calculateDistance";
 import { Ionicons } from "@expo/vector-icons";
 import { LegendList } from "@legendapp/list";
-import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import Fuse from "fuse.js";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -101,16 +100,19 @@ export default function MosquesScreen() {
   }, [sortedTimings, debouncedQuery, selectedMosqueID, pinnedMosques, fuse]);
 
   const renderLoadingCard = () => (
-    <View className="rounded-3xl p-6 bg-white dark:bg-neutral-800 items-center">
-      <ActivityIndicator size="large" color="#10b981" />
-      <Text className="text-gray-900 dark:text-white text-center mt-3">
+    <View className="rounded-2xl p-4 bg-gray-50 dark:bg-neutral-800/50 items-center">
+      <ActivityIndicator
+        size="small"
+        color={colorScheme === "dark" ? "#ffffff" : "#111827"}
+      />
+      <Text className="text-gray-900 dark:text-white text-center mt-2 text-sm">
         Loading...
       </Text>
     </View>
   );
   const renderErrorCard = (errorMessage: string) => (
-    <View className="rounded-3xl p-6 bg-white dark:bg-neutral-700 items-center border-2 border-red-400">
-      <Text className="text-red-600 dark:text-red-400 text-center">{`Error: ${errorMessage ?? "Unable to load"}`}</Text>
+    <View className="rounded-2xl p-4 bg-red-50 dark:bg-red-900/20 items-center border-2 border-red-400">
+      <Text className="text-red-600 dark:text-red-400 text-center text-sm">{`Error: ${errorMessage ?? "Unable to load"}`}</Text>
     </View>
   );
 
@@ -124,27 +126,28 @@ export default function MosquesScreen() {
     <TouchableOpacity
       onPress={() => handleMosqueSelect(mosque._id)}
       activeOpacity={0.5}
-      className={`bg-gray-100 dark:bg-neutral-800 rounded-3xl p-6 flex-row items-center gap-3 elevation-lg ${mosque._id === selectedMosqueID
-          ? "border-2 border-gray-300 dark:border-neutral-400"
+      className={`bg-gray-50 dark:bg-neutral-800/50 rounded-2xl p-4 flex-row items-center gap-3 ${
+        mosque._id === selectedMosqueID
+          ? "border-2 border-blue-400 dark:border-blue-500 bg-blue-50 dark:bg-blue-900/20"
           : "border border-gray-200 dark:border-neutral-600"
-        }`}
+      }`}
     >
-      <View className="gap-2 flex-1">
+      <View className="gap-1 flex-1">
         <Text
-          className={`text-2xl font-semibold text-left text-gray-900 dark:text-white`}
-          numberOfLines={3}
+          className={`text-lg font-semibold text-left text-gray-900 dark:text-white`}
+          numberOfLines={2}
         >
           {mosque.mosque_name}
         </Text>
         {!!mosque.postcode && (
           <Text
-            className={`text-sm text-left text-gray-700 dark:text-white/70`}
+            className={`text-sm text-left text-gray-600 dark:text-white/70`}
             numberOfLines={1}
           >
             {mosque.postcode}
           </Text>
         )}
-        <View className="flex-row items-center gap-5 mt-1">
+        <View className="flex-row items-center gap-3 mt-1">
           <View className="px-2 py-1 rounded-full bg-gray-200 dark:bg-neutral-700">
             <Text className="text-xs text-gray-900 dark:text-white">
               {mosque.distanceM != null
@@ -168,7 +171,7 @@ export default function MosquesScreen() {
           >
             <Ionicons
               name="map"
-              size={18}
+              size={16}
               color={colorScheme === "dark" ? "#ffffff" : "#111827"}
             />
           </TouchableOpacity>
@@ -186,7 +189,7 @@ export default function MosquesScreen() {
           >
             <Ionicons
               name="star"
-              size={18}
+              size={16}
               color={
                 pinnedMosques.includes(mosque._id)
                   ? "#facc15"
@@ -203,7 +206,7 @@ export default function MosquesScreen() {
 
   // Memoize the ItemSeparatorComponent
   const ItemSeparatorComponent = useCallback(
-    () => <View style={{ height: 16 }} />,
+    () => <View style={{ height: 12 }} />,
     []
   );
 
@@ -242,22 +245,13 @@ export default function MosquesScreen() {
   return (
     <View className="flex-1 bg-white dark:bg-neutral-900">
       {/* Header */}
-      <LinearGradient
-        colors={
-          colorScheme === "dark"
-            ? ["#262626", "#171717"]
-            : ["#d1d5db", "#ffffff"]
-        }
-        start={{ x: 0, y: 0.3 }}
-        end={{ x: 0, y: 1 }}
-        className="justify-center items-center w-full pt-24 pb-16 rounded-b-3xl relative"
-      >
+      <View className="w-full pt-16 pb-6 relative">
         <TouchableOpacity
           onPress={() => {
             haptics.light();
             router.back();
           }}
-          className="absolute left-5 top-5 p-3 rounded-full bg-black/10 dark:bg-white/10"
+          className="absolute left-5 top-5 p-3 rounded-full bg-gray-100 dark:bg-neutral-800"
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
           <Ionicons
@@ -266,15 +260,17 @@ export default function MosquesScreen() {
             color={colorScheme === "dark" ? "#ffffff" : "#111827"}
           />
         </TouchableOpacity>
-        <Text className="text-4xl font-bold text-gray-900 dark:text-white font-mono mb-6">
-          Mosques
-        </Text>
-        <Text className="text-lg text-gray-600 dark:text-white/80 text-center px-8">
-          Select a mosque to view its prayer times
-        </Text>
-      </LinearGradient>
+        <View className="items-center px-16">
+          <Text className="text-3xl font-bold text-gray-900 dark:text-white font-mono mb-2">
+            Mosques
+          </Text>
+          <Text className="text-base text-gray-600 dark:text-white/80 text-center">
+            Select a mosque to view its prayer times
+          </Text>
+        </View>
+      </View>
 
-      <View className="flex-row items-center bg-gray-100 dark:bg-neutral-800 rounded-3xl my-4 mx-4 p-4">
+      <View className="flex-row items-center bg-gray-50 dark:bg-neutral-800/50 rounded-2xl my-3 mx-4 p-3">
         <TextInput
           value={query}
           onChangeText={setQuery}

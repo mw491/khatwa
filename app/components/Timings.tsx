@@ -4,15 +4,8 @@ import {
   useTodayTimings,
 } from "@/lib/hooks/useTodayTimings";
 import { useSelectedMosqueStore } from "@/lib/store/mosqueStore";
-import { router } from "expo-router";
 import { useEffect, useRef, useState } from "react";
-import {
-  ActivityIndicator,
-  Animated,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Animated, Text, View } from "react-native";
 
 export default function Timings() {
   const { data: timings, isLoading, error, isError } = useTodayTimings();
@@ -100,11 +93,11 @@ export default function Timings() {
 
   const renderJumahCard = (displayName: string, time: string) => {
     return (
-      <View className="bg-gray-100 dark:bg-neutral-800 flex-row justify-between rounded-3xl p-4 border-2 border-gray-200 dark:border-neutral-700">
-        <Text className="text-2xl text-gray-900 dark:text-white">
+      <View className="flex-row flex-grow justify-between p-3 bg-gray-50 dark:bg-neutral-800/50 rounded-2xl">
+        <Text className="font-medium text-xl text-gray-900 dark:text-white">
           {displayName}
         </Text>
-        <Text className="text-2xl text-gray-900 dark:text-white">{time}</Text>
+        <Text className="text-lg text-gray-900 dark:text-white">{time}</Text>
       </View>
     );
   };
@@ -121,41 +114,85 @@ export default function Timings() {
 
     return (
       <View
-        className={`rounded-3xl p-4 border-2 flex-row items-center justify-between ${
+        className={`rounded-2xl p-3 flex-row items-center justify-between ${
           isCurrentOrNext
             ? isCurrent
-              ? "bg-gray-200 dark:bg-neutral-900 border-gray-400 dark:border-neutral-400"
-              : "bg-gray-100 dark:bg-neutral-800 border-gray-400 dark:border-neutral-400"
-            : "bg-gray-100 dark:bg-neutral-800 border-gray-200 dark:border-neutral-700"
+              ? "bg-blue-100 dark:bg-blue-900/30 border-2 border-blue-400 dark:border-blue-500"
+              : "bg-amber-100 dark:bg-amber-900/30 border-2 border-amber-400 dark:border-amber-500"
+            : "bg-gray-50 dark:bg-neutral-800/50"
         }`}
       >
-        <Text className={`text-3xl font-bold text-gray-900 dark:text-white`}>
-          {displayName}
-        </Text>
-        <View className="flex-row gap-5">
+        <View className="flex-row items-center gap-2">
+          {isCurrentOrNext && (
+            <View
+              className={`w-2 h-2 rounded-full ${
+                isCurrent
+                  ? "bg-blue-500 dark:bg-blue-400"
+                  : "bg-amber-500 dark:bg-amber-400"
+              }`}
+            />
+          )}
+          <Text
+            className={`text-xl ${
+              isCurrentOrNext
+                ? isCurrent
+                  ? "font-bold text-blue-900 dark:text-blue-100"
+                  : "font-bold text-amber-900 dark:text-amber-100"
+                : "font-medium text-gray-900 dark:text-white"
+            }`}
+          >
+            {displayName}
+          </Text>
+          {isCurrentOrNext && (
+            <Text
+              className={`text-xs font-medium ${
+                isCurrent
+                  ? "text-blue-700 dark:text-blue-300"
+                  : "text-amber-700 dark:text-amber-300"
+              }`}
+            >
+              {isCurrent ? "NOW" : "NEXT"}
+            </Text>
+          )}
+        </View>
+        <View className="flex-row gap-4">
           <View className="items-center">
-            <Text className="text-md text-gray-700 dark:text-white">Athan</Text>
+            <Text className="text-xs text-gray-600 dark:text-gray-300">
+              Athan
+            </Text>
             {loading ? (
-              <View className="h-6 w-20 bg-gray-200 dark:bg-neutral-600 rounded mt-1" />
+              <View className="h-5 w-16 bg-gray-200 dark:bg-neutral-600 rounded mt-1" />
             ) : (
               <Animated.Text
                 style={{ opacity: timesOpacity }}
-                className="text-2xl text-gray-900 dark:text-white"
+                className={`text-lg ${
+                  isCurrentOrNext
+                    ? isCurrent
+                      ? "text-blue-900 dark:text-blue-100 font-bold"
+                      : "text-amber-900 dark:text-amber-100 font-bold"
+                    : "text-gray-900 dark:text-white"
+                }`}
               >
                 {athanTime}
               </Animated.Text>
             )}
           </View>
           <View className="items-center">
-            <Text className="text-md text-gray-700 dark:text-white font-bold">
+            <Text className="text-xs text-gray-600 dark:text-gray-300 font-medium">
               Iqamah
             </Text>
             {loading ? (
-              <View className="h-6 w-20 bg-gray-200 dark:bg-neutral-600 rounded mt-1" />
+              <View className="h-5 w-16 bg-gray-200 dark:bg-neutral-600 rounded mt-1" />
             ) : (
               <Animated.Text
                 style={{ opacity: timesOpacity }}
-                className="text-2xl text-gray-900 dark:text-white font-bold"
+                className={`text-lg font-medium ${
+                  isCurrentOrNext
+                    ? isCurrent
+                      ? "text-blue-900 dark:text-blue-100 font-bold"
+                      : "text-amber-900 dark:text-amber-100 font-bold"
+                    : "text-gray-900 dark:text-white"
+                }`}
               >
                 {iqamahTime}
               </Animated.Text>
@@ -168,27 +205,6 @@ export default function Timings() {
 
   return (
     <View>
-      <TouchableOpacity
-        className="bg-white dark:bg-neutral-800 border-gray-300 dark:border-neutral-400 border-2 max-w-96 rounded-3xl p-8 mt-[-32px] mb-5 elevation-xl"
-        onPress={() => {
-          haptics.light();
-          router.push("/mosques");
-        }}
-      >
-        {shouldShowLoading ? (
-          <View className="flex-row items-center justify-center">
-            <ActivityIndicator size="small" color="#10b981" />
-            <Text className="text-gray-900 dark:text-white text-center font-bold ml-3">
-              Loading...
-            </Text>
-          </View>
-        ) : (
-          <Text className="text-2xl text-gray-900 dark:text-white text-center font-bold">
-            {mosque?.mosque_name}
-          </Text>
-        )}
-      </TouchableOpacity>
-
       {isError && error && (
         <View className="w-full items-center mb-5">
           <View className="bg-white dark:bg-neutral-800 border-red-400 border-2 min-w-96 rounded-3xl p-4 items-center">
@@ -197,7 +213,7 @@ export default function Timings() {
         </View>
       )}
 
-      <View className="min-w-96 gap-5">
+      <View className="min-w-96 gap-2">
         {renderPrayerCard(
           "fajr",
           "Fajr",
@@ -233,13 +249,15 @@ export default function Timings() {
           prayerTimes?.isha.jamat ?? "",
           shouldShowLoading
         )}
-        {prayerTimes?.jumah_1 &&
-          renderJumahCard(
-            prayerTimes?.jumah_2 ? "Jumah 1" : "Jumah",
-            prayerTimes?.jumah_1 ?? ""
-          )}
-        {prayerTimes?.jumah_2 &&
-          renderJumahCard("Jumah 2", prayerTimes?.jumah_2 ?? "")}
+        <View className="flex-row justify-between gap-2">
+          {prayerTimes?.jumah_1 &&
+            renderJumahCard(
+              prayerTimes?.jumah_2 ? "Jumah 1" : "Jumah",
+              prayerTimes?.jumah_1 ?? ""
+            )}
+          {prayerTimes?.jumah_2 &&
+            renderJumahCard("Jumah 2", prayerTimes?.jumah_2 ?? "")}
+        </View>
       </View>
     </View>
   );

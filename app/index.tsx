@@ -1,4 +1,6 @@
 import Header from "@/app/components/Header";
+import DeltaLine from "@/app/components/DeltaLine";
+import HijriDate from "@/app/components/HijriDate";
 import Timings from "@/app/components/Timings";
 import { useQueryClient } from "@tanstack/react-query";
 import React from "react";
@@ -34,7 +36,8 @@ export default function Index() {
     >
       <View className="flex-1 pb-8 justify-start items-center bg-white dark:bg-neutral-900">
         <Header />
-        {/* <DataTable /> */}
+        <DeltaLine />
+        <HijriDate />
         <Timings />
       </View>
     </ScrollView>
