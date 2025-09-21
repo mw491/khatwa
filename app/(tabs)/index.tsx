@@ -1,7 +1,7 @@
-import Header from "@/app/components/Header";
-import DeltaLine from "@/app/components/DeltaLine";
-import HijriDate from "@/app/components/HijriDate";
-import Timings from "@/app/components/Timings";
+import Header from "@/lib/components/Header";
+import DeltaLine from "@/lib/components/DeltaLine";
+import HijriDate from "@/lib/components/HijriDate";
+import Timings from "@/lib/components/Timings";
 import { useQueryClient } from "@tanstack/react-query";
 import React from "react";
 import { RefreshControl, ScrollView, View, useColorScheme } from "react-native";

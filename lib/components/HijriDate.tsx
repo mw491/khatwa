@@ -13,11 +13,25 @@ export default function HijriDate() {
   }, []);
 
   const formatHijriDate = (date: Date) => {
-    return new Intl.DateTimeFormat("ar-SA-u-ca-islamic", {
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    }).format(date);
+    try {
+      return new Intl.DateTimeFormat("ar-SA-u-ca-islamic", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      }).format(date);
+    } catch {
+      // Fallback to Gregorian if Islamic calendar isn't available
+      try {
+        return new Intl.DateTimeFormat("en-GB", {
+          day: "2-digit",
+          month: "long",
+          year: "numeric",
+        }).format(date);
+      } catch {
+        // Final minimal fallback
+        return date.toDateString();
+      }
+    }
   };
 
   return (

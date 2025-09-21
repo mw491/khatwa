@@ -6,11 +6,20 @@ import { Text, View } from "react-native";
 // Helpers for computing real-time delta using only jamaat times
 const parseJamaatToDate = (time: string | null, base: Date): Date | null => {
   if (!time) return null;
-  const parts = time.split(":");
+  const parts = time.trim().split(":");
   if (parts.length !== 2) return null;
   const hours = Number(parts[0]);
   const minutes = Number(parts[1]);
-  if (Number.isNaN(hours) || Number.isNaN(minutes)) return null;
+  if (
+    Number.isNaN(hours) ||
+    Number.isNaN(minutes) ||
+    hours < 0 ||
+    hours > 23 ||
+    minutes < 0 ||
+    minutes > 59
+  ) {
+    return null;
+  }
   const d = new Date(base);
   d.setHours(hours, minutes, 0, 0);
   return d;

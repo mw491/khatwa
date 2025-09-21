@@ -1,5 +1,5 @@
 import "@/app/global.css";
-import { Stack } from "expo-router";
+import { Slot } from "expo-router";
 import { PostHogProvider } from "posthog-react-native";
 
 import { mmkvPersister } from "@/lib/storage/queryPersist";
@@ -7,7 +7,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { persistQueryClient } from "@tanstack/react-query-persist-client";
 import { StatusBar } from "expo-status-bar";
 import { useColorScheme } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -42,15 +42,18 @@ export default function RootLayout() {
         }}
         autocapture
       >
-        <SafeAreaView
-          style={{ flex: 1, backgroundColor: isDark ? "#171717" : "#ffffff" }}
-        >
-          <StatusBar style={isDark ? "light" : "dark"} animated />
-          <Stack>
-            <Stack.Screen name="index" options={{ headerShown: false }} />
-            <Stack.Screen name="mosques" options={{ headerShown: false }} />
-          </Stack>
-        </SafeAreaView>
+        <SafeAreaProvider>
+          <SafeAreaView
+            style={{ flex: 1, backgroundColor: isDark ? "#171717" : "#ffffff" }}
+          >
+            <StatusBar style={isDark ? "light" : "dark"} animated />
+            {/* <Stack>
+              <Stack.Screen name="index" options={{ headerShown: false }} />
+              <Stack.Screen name="mosques" options={{ headerShown: false }} />
+            </Stack> */}
+            <Slot />
+          </SafeAreaView>
+        </SafeAreaProvider>
       </PostHogProvider>
     </QueryClientProvider>
   );

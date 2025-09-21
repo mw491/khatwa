@@ -1,18 +1,9 @@
-import { useHaptics } from "@/lib/hooks/useHaptics";
 import { useTodayTimings } from "@/lib/hooks/useTodayTimings";
 import { useSelectedMosqueStore } from "@/lib/store/mosqueStore";
 import { Ionicons } from "@expo/vector-icons";
-import { router } from "expo-router";
-import {
-  ActivityIndicator,
-  Text,
-  TouchableOpacity,
-  useColorScheme,
-  View,
-} from "react-native";
+import { ActivityIndicator, Text, useColorScheme, View } from "react-native";
 
 export default function Header() {
-  const haptics = useHaptics();
   const colorScheme = useColorScheme();
   const isDark = colorScheme === "dark";
 
@@ -30,13 +21,7 @@ export default function Header() {
 
   return (
     <View className="w-full pt-5 pb-3">
-      <TouchableOpacity
-        className="bg-white dark:bg-neutral-800 min-w-96 rounded-full p-4 mb-5 mx-auto elevation-xl"
-        onPress={() => {
-          haptics.light();
-          router.push("/mosques");
-        }}
-      >
+      <View className="bg-white dark:bg-neutral-800 min-w-96 rounded-full p-4 mb-5 mx-auto elevation-xl">
         {shouldShowLoading ? (
           <View className="flex-row items-center justify-center">
             <ActivityIndicator
@@ -48,18 +33,18 @@ export default function Header() {
             </Text>
           </View>
         ) : (
-          <View className="flex-row items-center justify-center">
-            <Text className="text-lg text-gray-900 dark:text-white text-center font-bold">
-              {mosque?.mosque_name}
-            </Text>
+          <View className="flex-row gap-2 items-center justify-center">
             <Ionicons
-              name="chevron-forward"
+              name="location"
               size={20}
               color={isDark ? "#ffffff" : "#111827"}
             />
+            <Text className="text-lg text-gray-900 dark:text-white text-center font-bold">
+              {mosque?.mosque_name}
+            </Text>
           </View>
         )}
-      </TouchableOpacity>
+      </View>
     </View>
   );
 }

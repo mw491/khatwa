@@ -13,6 +13,7 @@ import Fuse from "fuse.js";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
+  Alert,
   Linking,
   Text,
   TextInput,
@@ -164,7 +165,10 @@ export default function MosquesScreen() {
                 const url = mosque.google_maps_link;
                 await Linking.openURL(url);
               } catch (err) {
-                alert("Failed to open the map link due to error: " + err);
+                Alert.alert(
+                  "Unable to open map",
+                  `Failed to open the map link due to error: ${String(err)}`
+                );
               }
             }}
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
@@ -246,20 +250,6 @@ export default function MosquesScreen() {
     <View className="flex-1 bg-white dark:bg-neutral-900">
       {/* Header */}
       <View className="w-full pt-16 pb-6 relative">
-        <TouchableOpacity
-          onPress={() => {
-            haptics.light();
-            router.back();
-          }}
-          className="absolute left-5 top-5 p-3 rounded-full bg-gray-100 dark:bg-neutral-800"
-          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-        >
-          <Ionicons
-            name="arrow-back"
-            size={24}
-            color={colorScheme === "dark" ? "#ffffff" : "#111827"}
-          />
-        </TouchableOpacity>
         <View className="items-center px-16">
           <Text className="text-3xl font-bold text-gray-900 dark:text-white font-mono mb-2">
             Mosques
