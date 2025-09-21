@@ -1,6 +1,6 @@
 // src/storage/queryPersist.ts
-import { createAsyncStoragePersister } from '@tanstack/query-async-storage-persister';
-import { mmkv } from './mmkv';
+import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persister";
+import { mmkv } from "./mmkv";
 
 export const mmkvPersister = createAsyncStoragePersister({
   storage: {

@@ -76,10 +76,10 @@ export function getCurrentOrNextPrayer(
       return minutes === null
         ? null
         : {
-          name: prayer.name,
-          time: prayer.time,
-          minutes,
-        };
+            name: prayer.name,
+            time: prayer.time,
+            minutes,
+          };
     })
     .filter(
       (p): p is { name: string; time: PrayerTime; minutes: number } =>
@@ -172,7 +172,7 @@ export function useTodayTimings() {
         const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
 
         const res = await fetch("https://khatwa-backend.vercel.app/", {
-          signal: controller.signal
+          signal: controller.signal,
         });
         clearTimeout(timeoutId);
 
@@ -184,7 +184,7 @@ export function useTodayTimings() {
         if (error instanceof Error) {
           throw new Error(`Failed to fetch: ${error.message}`);
         }
-        throw new Error('An unknown error occurred');
+        throw new Error("An unknown error occurred");
       }
     },
     // Keep data fresh until the next local midnight

@@ -1,6 +1,6 @@
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
-import { jsonZustandStorage } from '../storage/zustandPersist';
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
+import { jsonZustandStorage } from "../storage/zustandPersist";
 
 // selected mosque
 interface SelectedMosqueStore {
@@ -15,12 +15,11 @@ export const useSelectedMosqueStore = create<SelectedMosqueStore>()(
       setSelectedMosqueID: (id) => set({ selectedMosqueID: id }),
     }),
     {
-      name: 'selected-mosque',
+      name: "selected-mosque",
       storage: jsonZustandStorage,
     }
   )
 );
-
 
 // pinned mosques
 interface PinnedMosquesStore {
@@ -40,7 +39,7 @@ export const usePinnedMosquesStore = create<PinnedMosquesStore>()(
         })),
     }),
     {
-      name: 'pinned-mosques',
+      name: "pinned-mosques",
       storage: jsonZustandStorage,
     }
   )
