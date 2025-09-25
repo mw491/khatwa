@@ -1,5 +1,5 @@
 import "@/app/global.css";
-import { Slot } from "expo-router";
+import { Stack } from "expo-router";
 import { PostHogProvider } from "posthog-react-native";
 
 import { mmkvPersister } from "@/lib/storage/queryPersist";
@@ -47,11 +47,10 @@ export default function RootLayout() {
             style={{ flex: 1, backgroundColor: isDark ? "#171717" : "#ffffff" }}
           >
             <StatusBar style={isDark ? "light" : "dark"} animated />
-            {/* <Stack>
+            <Stack>
               <Stack.Screen name="index" options={{ headerShown: false }} />
               <Stack.Screen name="mosques" options={{ headerShown: false }} />
-            </Stack> */}
-            <Slot />
+            </Stack>
           </SafeAreaView>
         </SafeAreaProvider>
       </PostHogProvider>

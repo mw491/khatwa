@@ -5,6 +5,7 @@ import Timings from "@/lib/components/Timings";
 import { useQueryClient } from "@tanstack/react-query";
 import React from "react";
 import { RefreshControl, ScrollView, View, useColorScheme } from "react-native";
+import ReportModal from "@/lib/components/ReportModal";
 
 export default function Index() {
   const colorScheme = useColorScheme();
@@ -40,6 +41,7 @@ export default function Index() {
         <HijriDate />
         <Timings />
       </View>
+      <ReportModal />
     </ScrollView>
   );
 }
