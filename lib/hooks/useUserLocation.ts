@@ -23,8 +23,20 @@ export function useLiveLocation(options?: Location.LocationOptions) {
           return;
         }
 
-        // Get initial location
-        const initial = await Location.getCurrentPositionAsync({});
+        // Use last known position immediately if available for fast initial render
+        const last = await Location.getLastKnownPositionAsync();
+        if (isMounted && last) {
+          setCoords({
+            latitude: last.coords.latitude,
+            longitude: last.coords.longitude,
+            accuracy: last.coords.accuracy,
+          });
+        }
+
+        // Fetch a fresh current position with balanced accuracy for speed
+        const initial = await Location.getCurrentPositionAsync({
+          accuracy: Location.Accuracy.Balanced,
+        });
         if (isMounted) {
           setCoords({
             latitude: initial.coords.latitude,
@@ -33,12 +45,12 @@ export function useLiveLocation(options?: Location.LocationOptions) {
           });
         }
 
-        // Watch position in real-time
+        // Watch position in real-time (balanced to reduce delay/usage)
         subscriber.current = await Location.watchPositionAsync(
           {
-            accuracy: Location.Accuracy.High,
-            timeInterval: 10000, // every 10s
-            distanceInterval: 100, // every 100m
+            accuracy: Location.Accuracy.Balanced,
+            timeInterval: 15000, // every 15s
+            distanceInterval: 150, // every 150m
             ...options,
           },
           (loc) => {

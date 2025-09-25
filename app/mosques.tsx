@@ -10,7 +10,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { LegendList } from "@legendapp/list";
 import { router } from "expo-router";
 import Fuse from "fuse.js";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -39,21 +39,23 @@ export default function MosquesScreen() {
   const [sortedTimings, setSortedTimings] = useState<Timings[] | null>(null);
 
   useEffect(() => {
-    if (!timings || !coords) return;
-    const dists = timings
+    if (!timings) return;
+    const withDistances = timings
       .map((mosque) => ({
         ...mosque,
-        distanceM: Math.round(
-          calculateDistance(
-            coords.latitude,
-            coords.longitude,
-            mosque.coordinates.lat,
-            mosque.coordinates.long
-          )
-        ),
+        distanceM: coords
+          ? Math.round(
+              calculateDistance(
+                coords.latitude,
+                coords.longitude,
+                mosque.coordinates.lat,
+                mosque.coordinates.long
+              )
+            )
+          : undefined,
       }))
-      .sort((a, b) => a.distanceM - b.distanceM);
-    setSortedTimings(dists);
+      .sort((a, b) => (a.distanceM ?? Infinity) - (b.distanceM ?? Infinity));
+    setSortedTimings(withDistances);
   }, [coords, timings]);
 
   const pinnedMosques = usePinnedMosquesStore((state) => state.pinnedMosques);
@@ -149,15 +151,20 @@ export default function MosquesScreen() {
           </Text>
         )}
         <View className="flex-row items-center gap-3 mt-1">
-          <View className="px-2 py-1 rounded-full bg-gray-200 dark:bg-neutral-700">
-            <Text className="text-xs text-gray-900 dark:text-white">
-              {mosque.distanceM != null
-                ? mosque.distanceM >= 1000
+          {mosque.distanceM != null ? (
+            <View className="px-2 py-1 rounded-full bg-gray-200 dark:bg-neutral-700">
+              <Text className="text-xs text-gray-900 dark:text-white">
+                {mosque.distanceM >= 1000
                   ? (mosque.distanceM / 1000).toFixed(2) + " km"
-                  : mosque.distanceM + " m"
-                : ""}
-            </Text>
-          </View>
+                  : mosque.distanceM + " m"}
+              </Text>
+            </View>
+          ) : !locationError ? (
+            <View
+              className="rounded-full bg-gray-200 dark:bg-neutral-700"
+              style={{ height: 20, minWidth: 56 }}
+            />
+          ) : null}
           <TouchableOpacity
             onPress={async () => {
               try {
@@ -216,7 +223,7 @@ export default function MosquesScreen() {
 
   // Memoize the ListHeaderComponent
   const ListHeaderComponent = useCallback(() => {
-    const showLoading = isLoading || !coords;
+    const showLoading = isLoading;
     const showFetchError = !isLoading && !!fetchError;
     const showLocationError = !isLoading && !!locationError;
 
@@ -231,17 +238,25 @@ export default function MosquesScreen() {
         {showLocationError && renderErrorCard(locationError as string)}
       </View>
     );
-  }, [coords, isLoading, fetchError, locationError]);
+  }, [isLoading, fetchError, locationError]);
 
-  // Add haptic feedback for errors
+  // Add haptic feedback once on transition to an error state
+  const prevFetchError = useRef<boolean>(false);
+  const prevLocationError = useRef<boolean>(false);
   useEffect(() => {
-    if (fetchError) {
+    const hasFetchError = !!fetchError;
+    const hasLocationError = !!locationError;
+
+    if (hasFetchError && !prevFetchError.current) {
       haptics.error();
     }
-    if (locationError) {
+    if (hasLocationError && !prevLocationError.current) {
       haptics.warning();
     }
-  }, [fetchError, locationError, haptics]);
+
+    prevFetchError.current = hasFetchError;
+    prevLocationError.current = hasLocationError;
+  }, [fetchError, locationError]);
 
   // Memoize the keyExtractor
   const keyExtractor = useCallback((item: any) => item._id, []);
@@ -307,9 +322,9 @@ export default function MosquesScreen() {
         data={filteredTimings}
         keyExtractor={keyExtractor}
         recycleItems={true}
-        maintainVisibleContentPosition
+        // maintainVisibleContentPosition
         renderItem={renderItem}
-        extraData={pinnedMosques}
+        extraData={{ pinnedMosques, locationError }}
         ItemSeparatorComponent={ItemSeparatorComponent}
         ListHeaderComponent={ListHeaderComponent}
         contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 24 }}

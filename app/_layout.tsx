@@ -1,5 +1,5 @@
 import "@/app/global.css";
-import { Stack } from "expo-router";
+import { Stack, Redirect, usePathname } from "expo-router";
 import { PostHogProvider } from "posthog-react-native";
 
 import { mmkvPersister } from "@/lib/storage/queryPersist";
@@ -8,6 +8,7 @@ import { persistQueryClient } from "@tanstack/react-query-persist-client";
 import { StatusBar } from "expo-status-bar";
 import { useColorScheme } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import { useSelectedMosqueStore } from "@/lib/store/mosqueStore";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -31,6 +32,10 @@ persistQueryClient({
 export default function RootLayout() {
   const colorScheme = useColorScheme();
   const isDark = colorScheme === "dark";
+  const pathname = usePathname();
+  const selectedMosqueID = useSelectedMosqueStore((s) => s.selectedMosqueID);
+  const shouldRedirectToOnboarding =
+    !selectedMosqueID && pathname !== "/onboarding";
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -47,10 +52,18 @@ export default function RootLayout() {
             style={{ flex: 1, backgroundColor: isDark ? "#171717" : "#ffffff" }}
           >
             <StatusBar style={isDark ? "light" : "dark"} animated />
-            <Stack>
-              <Stack.Screen name="index" options={{ headerShown: false }} />
-              <Stack.Screen name="mosques" options={{ headerShown: false }} />
-            </Stack>
+            {shouldRedirectToOnboarding ? (
+              <Redirect href="/onboarding" />
+            ) : (
+              <Stack>
+                <Stack.Screen
+                  name="onboarding"
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen name="index" options={{ headerShown: false }} />
+                <Stack.Screen name="mosques" options={{ headerShown: false }} />
+              </Stack>
+            )}
           </SafeAreaView>
         </SafeAreaProvider>
       </PostHogProvider>
