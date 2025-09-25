@@ -18,16 +18,18 @@ export default function Dropdown() {
   const [dropdownTop, setDropdownTop] = useState(0);
   const [dropdownLeft, setDropdownLeft] = useState(0);
 
-  const buttonRef = useRef<TouchableOpacity>(null);
-  const dropdownRef = useRef<Modal>(null);
+  const buttonRef = useRef<View>(null);
+  const dropdownRef = useRef<View>(null);
 
   const toggleDropdown = () => {
     if (!modalVisible) {
-      buttonRef.current.measureInWindow((x, y, width, height) => {
-        setDropdownTop(y + height + 40);
-        setDropdownLeft(x - width - 150); // Initial position estimate
-        setModalVisible(true);
-      });
+      buttonRef.current?.measureInWindow(
+        (x: number, y: number, width: number, height: number) => {
+          setDropdownTop(y + height + 40);
+          setDropdownLeft(x - width - 150); // Initial position estimate
+          setModalVisible(true);
+        }
+      );
     } else {
       setModalVisible(false);
     }
@@ -37,13 +39,20 @@ export default function Dropdown() {
     if (modalVisible && buttonRef.current && dropdownRef.current) {
       // Small delay to ensure the modal is fully rendered
       setTimeout(() => {
-        buttonRef.current.measureInWindow((x, y, width, height) => {
-          dropdownRef.current.measureInWindow(
-            (dropdownX, dropdownY, dropdownWidth, dropdownHeight) => {
-              setDropdownLeft(x + width - dropdownWidth);
-            }
-          );
-        });
+        buttonRef.current?.measureInWindow(
+          (x: number, y: number, width: number, height: number) => {
+            dropdownRef.current?.measureInWindow(
+              (
+                dropdownX: number,
+                dropdownY: number,
+                dropdownWidth: number,
+                dropdownHeight: number
+              ) => {
+                setDropdownLeft(x + width - dropdownWidth);
+              }
+            );
+          }
+        );
       }, 10);
     }
   }, [modalVisible]);
