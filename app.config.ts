@@ -5,8 +5,8 @@ const widgetConfig: WithAndroidWidgetsParams = {
   // fonts: ['./assets/fonts/Inter.ttf'],
   widgets: [
     {
-      name: "Hello", // This name will be the **name** with which we will reference our widget.
-      label: "My Hello Widget", // Label shown in the widget picker
+      name: "JamaatTimes", // This name will be the **name** with which we will reference our widget.
+      label: "Jamaat Times", // Label shown in the widget picker
       minWidth: "320dp",
       minHeight: "120dp",
       // This means the widget's default size is 5x2 cells, as specified by the targetCellWidth and targetCellHeight attributes.
@@ -14,7 +14,7 @@ const widgetConfig: WithAndroidWidgetsParams = {
       // If defined, targetCellWidth,targetCellHeight attributes are used instead of minWidth or minHeight.
       targetCellWidth: 5,
       targetCellHeight: 2,
-      description: "This is my first widget", // Description shown in the widget picker
+      description: "Jamaat times for selected mosque", // Description shown in the widget picker
       // previewImage: './assets/widget-preview/hello.png', // Path to widget preview image
 
       // How often, in milliseconds, that this AppWidget wants to be updated.
