@@ -1,12 +1,6 @@
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  Modal,
-  useColorScheme,
-} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useRef, useState, useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
+import { Modal, Text, Pressable, useColorScheme, View } from "react-native";
 import { useReportModalStore } from "../store/reportModalStore";
 
 export default function Dropdown() {
@@ -59,9 +53,15 @@ export default function Dropdown() {
 
   return (
     <View>
-      <TouchableOpacity
-        className="bg-white dark:bg-neutral-800 p-4 rounded-full elevation-xl"
+      {/* prev TouchableOpacity className: bg-white dark:bg-neutral-800 p-4 rounded-full relative shadow-md active:scale-[0.98] transition-transform duration-200 */}
+      <Pressable
+        className="bg-white dark:bg-neutral-800 p-4 rounded-full relative shadow-md overflow-hidden"
+        // active:scale-[0.98] transition-transform duration-200"
         onPress={toggleDropdown}
+        android_ripple={{
+          color: isDark ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.1)",
+          foreground: true,
+        }}
         ref={buttonRef}
       >
         <Ionicons
@@ -69,7 +69,7 @@ export default function Dropdown() {
           size={22}
           color={isDark ? "white" : "black"}
         />
-      </TouchableOpacity>
+      </Pressable>
 
       <Modal
         animationType="fade"
@@ -77,22 +77,29 @@ export default function Dropdown() {
         visible={modalVisible}
         onRequestClose={() => setModalVisible(false)}
       >
-        <TouchableOpacity
+        <Pressable
           className="flex-1 bg-transparent"
-          activeOpacity={1}
           onPress={() => setModalVisible(false)}
         >
           <View
-            className="absolute bg-white dark:bg-neutral-800 py-2 rounded-2xl gap-2 border-[1px] border-neutral-300 dark:border-neutral-600 elevation-xl"
+            className="absolute bg-white dark:bg-neutral-800 rounded-2xl gap-0 overflow-hidden
+              border-[0.5px] border-neutral-200/80 dark:border-neutral-700 shadow-md"
             style={{
               top: dropdownTop,
               left: dropdownLeft,
             }}
             ref={dropdownRef}
           >
-            <TouchableOpacity
-              className="flex-row items-center py-1 px-4"
-              onPress={() => openReportModal("incorrect_timings")}
+            <Pressable
+              className="flex-row items-center py-4 px-4"
+              onPress={() => {
+                setModalVisible(false);
+                openReportModal("incorrect_timings");
+              }}
+              android_ripple={{
+                color: isDark ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.1)",
+                foreground: true,
+              }}
             >
               <Ionicons
                 name="flag-outline"
@@ -102,12 +109,19 @@ export default function Dropdown() {
               <Text className="dark:text-white p-2 text-lg">
                 Report Incorrect Timings
               </Text>
-            </TouchableOpacity>
-            <View className="h-px bg-neutral-300 dark:bg-neutral-600" />
+            </Pressable>
+            <View className="h-[0.5px] bg-neutral-200/80 dark:bg-neutral-700" />
 
-            <TouchableOpacity
-              className="flex-row items-center py-1 px-4"
-              onPress={() => openReportModal("new_mosque")}
+            <Pressable
+              className="flex-row items-center py-4 px-4"
+              onPress={() => {
+                setModalVisible(false);
+                openReportModal("new_mosque");
+              }}
+              android_ripple={{
+                color: isDark ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.1)",
+                foreground: true,
+              }}
             >
               <Ionicons
                 name="add-circle-outline"
@@ -117,12 +131,19 @@ export default function Dropdown() {
               <Text className="dark:text-white p-2 text-lg">
                 Request New Mosque
               </Text>
-            </TouchableOpacity>
-            <View className="h-px bg-neutral-300 dark:bg-neutral-600" />
+            </Pressable>
+            <View className="h-[0.5px] bg-neutral-200/80 dark:bg-neutral-700" />
 
-            <TouchableOpacity
-              className="flex-row items-center py-1 px-4"
-              onPress={() => openReportModal("feature_request")}
+            <Pressable
+              className="flex-row items-center py-4 px-4 overflow-hidden"
+              onPress={() => {
+                setModalVisible(false);
+                openReportModal("feature_request");
+              }}
+              android_ripple={{
+                color: isDark ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.1)",
+                foreground: true,
+              }}
             >
               <Ionicons
                 name="bulb-outline"
@@ -132,9 +153,9 @@ export default function Dropdown() {
               <Text className="dark:text-white p-2 text-lg">
                 Feature Request
               </Text>
-            </TouchableOpacity>
+            </Pressable>
           </View>
-        </TouchableOpacity>
+        </Pressable>
       </Modal>
     </View>
   );

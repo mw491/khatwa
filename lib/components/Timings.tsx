@@ -93,7 +93,7 @@ export default function Timings() {
 
   const renderJumahCard = (displayName: string, time: string) => {
     return (
-      <View className="flex-row flex-grow justify-between p-3 bg-gray-50 dark:bg-neutral-800/50 rounded-2xl">
+      <View className="flex-row flex-grow justify-between px-3 py-4 shadow-md bg-gray-50 dark:bg-neutral-800/50 rounded-2xl">
         <Text className="font-medium text-xl text-gray-900 dark:text-white">
           {displayName}
         </Text>
@@ -114,7 +114,7 @@ export default function Timings() {
 
     return (
       <View
-        className={`rounded-2xl p-3 flex-row items-center justify-between ${
+        className={`rounded-2xl p-3 flex-row items-center justify-between shadow-md ${
           isCurrentOrNext
             ? isCurrent
               ? "bg-blue-100 dark:bg-blue-900/30 border-2 border-blue-400 dark:border-blue-500"

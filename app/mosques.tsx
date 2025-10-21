@@ -15,9 +15,9 @@ import {
   ActivityIndicator,
   Alert,
   Linking,
+  Pressable,
   Text,
   TextInput,
-  TouchableOpacity,
   View,
   useColorScheme,
 } from "react-native";
@@ -126,14 +126,20 @@ export default function MosquesScreen() {
   };
 
   const renderItem = ({ item: mosque }: { item: Timings }) => (
-    <TouchableOpacity
+    <Pressable
       onPress={() => handleMosqueSelect(mosque._id)}
-      activeOpacity={0.5}
-      className={`bg-gray-50 dark:bg-neutral-800/50 rounded-2xl p-4 flex-row items-center gap-3 ${
-        mosque._id === selectedMosqueID
-          ? "border-2 border-blue-400 dark:border-blue-500 bg-blue-50 dark:bg-blue-900/20"
-          : "border border-gray-200 dark:border-neutral-600"
-      }`}
+      className={`bg-gray-50 dark:bg-neutral-800/50 rounded-2xl p-4 flex-row items-center gap-3 overflow-hidden
+        active:scale-[0.99] transition-transform duration-200 ${
+          mosque._id === selectedMosqueID
+            ? "border-2 border-blue-400 dark:border-blue-500 bg-blue-50 dark:bg-blue-900/20"
+            : "border border-gray-200 dark:border-neutral-600"
+        }`}
+      android_ripple={{
+        color:
+          colorScheme === "dark" ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.1)",
+        foreground: true,
+      }}
+      style={({ pressed }) => [pressed && { opacity: 0.6 }]}
     >
       <View className="gap-1 flex-1">
         <Text
@@ -165,7 +171,7 @@ export default function MosquesScreen() {
               style={{ height: 20, minWidth: 56 }}
             />
           ) : null}
-          <TouchableOpacity
+          <Pressable
             onPress={async () => {
               try {
                 haptics.light();
@@ -179,14 +185,22 @@ export default function MosquesScreen() {
               }
             }}
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            android_ripple={{
+              color:
+                colorScheme === "dark"
+                  ? "rgba(255,255,255,0.2)"
+                  : "rgba(0,0,0,0.1)",
+              foreground: true,
+            }}
+            style={({ pressed }) => [pressed && { opacity: 0.6 }]}
           >
             <Ionicons
               name="map"
               size={16}
               color={colorScheme === "dark" ? "#ffffff" : "#111827"}
             />
-          </TouchableOpacity>
-          <TouchableOpacity
+          </Pressable>
+          <Pressable
             onPress={() => {
               const isCurrentlyPinned = pinnedMosques.includes(mosque._id);
               if (isCurrentlyPinned) {
@@ -197,6 +211,14 @@ export default function MosquesScreen() {
               togglePinnedMosque(mosque._id);
             }}
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            android_ripple={{
+              color:
+                colorScheme === "dark"
+                  ? "rgba(255,255,255,0.2)"
+                  : "rgba(0,0,0,0.1)",
+              foreground: true,
+            }}
+            style={({ pressed }) => [pressed && { opacity: 0.6 }]}
           >
             <Ionicons
               name="star"
@@ -209,10 +231,10 @@ export default function MosquesScreen() {
                     : "#9ca3af"
               }
             />
-          </TouchableOpacity>
+          </Pressable>
         </View>
       </View>
-    </TouchableOpacity>
+    </Pressable>
   );
 
   // Memoize the ItemSeparatorComponent
@@ -265,12 +287,20 @@ export default function MosquesScreen() {
     <View className="flex-1 bg-white dark:bg-neutral-900">
       {/* Header */}
       <View className="w-full pt-16 pb-6 relative">
-        <TouchableOpacity
+        <Pressable
           onPress={() => {
             haptics.light();
             router.back();
           }}
-          className="absolute left-5 top-5 p-3 rounded-full bg-gray-100 dark:bg-neutral-800"
+          className="absolute left-5 top-5 p-3 rounded-full bg-gray-100 dark:bg-neutral-800 shadow-md overflow-hidden"
+          android_ripple={{
+            color:
+              colorScheme === "dark"
+                ? "rgba(255,255,255,0.2)"
+                : "rgba(0,0,0,0.1)",
+            foreground: true,
+          }}
+          //  active:scale-[0.98] transition-transform duration-200"
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
           <Ionicons
@@ -278,7 +308,7 @@ export default function MosquesScreen() {
             size={24}
             color={colorScheme === "dark" ? "#ffffff" : "#111827"}
           />
-        </TouchableOpacity>
+        </Pressable>
         <View className="items-center px-16">
           <Text className="text-3xl font-bold text-gray-900 dark:text-white font-mono mb-2">
             Mosques
@@ -300,19 +330,27 @@ export default function MosquesScreen() {
           className="flex-1 text-gray-900 dark:text-white"
         />
         {query.length > 0 && (
-          <TouchableOpacity
+          <Pressable
             onPress={() => {
               setQuery("");
               haptics.light();
             }}
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            android_ripple={{
+              color:
+                colorScheme === "dark"
+                  ? "rgba(255,255,255,0.2)"
+                  : "rgba(0,0,0,0.1)",
+              foreground: true,
+            }}
+            style={({ pressed }) => [pressed && { opacity: 0.6 }]}
           >
             <Ionicons
               name="close-circle"
               size={20}
               color={colorScheme === "dark" ? "#9ca3af" : "#6b7280"}
             />
-          </TouchableOpacity>
+          </Pressable>
         )}
       </View>
 

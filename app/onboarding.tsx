@@ -14,7 +14,7 @@ import {
   ActivityIndicator,
   TextInput,
   Text,
-  TouchableOpacity,
+  Pressable,
   View,
   useColorScheme,
 } from "react-native";
@@ -81,14 +81,19 @@ export default function OnboardingScreen() {
   }, [sortedTimings, debouncedQuery, fuse]);
 
   const renderItem = ({ item: mosque }: { item: Timings }) => (
-    <TouchableOpacity
+    <Pressable
       onPress={() => setSelectedMosqueID(mosque._id)}
-      activeOpacity={0.6}
-      className={`bg-gray-50 dark:bg-neutral-800/50 rounded-2xl p-4 flex-row items-center gap-3 ${
+      className={`bg-gray-50 dark:bg-neutral-800/50 rounded-2xl p-4 flex-row items-center gap-3 overflow-hidden ${
         mosque._id === selectedMosqueID
           ? "border-2 border-blue-400 dark:border-blue-500 bg-blue-50 dark:bg-blue-900/20"
           : "border border-gray-200 dark:border-neutral-600"
       }`}
+      android_ripple={{
+        color:
+          colorScheme === "dark" ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.1)",
+        foreground: true,
+      }}
+      style={({ pressed }) => [pressed && { opacity: 0.6 }]}
     >
       <View className="gap-1 flex-1">
         <Text
@@ -114,9 +119,17 @@ export default function OnboardingScreen() {
               </Text>
             </View>
           )}
-          <TouchableOpacity
+          <Pressable
             onPress={() => togglePinnedMosque(mosque._id)}
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            android_ripple={{
+              color:
+                colorScheme === "dark"
+                  ? "rgba(255,255,255,0.2)"
+                  : "rgba(0,0,0,0.1)",
+              foreground: true,
+            }}
+            style={({ pressed }) => [pressed && { opacity: 0.6 }]}
           >
             <Ionicons
               name="star"
@@ -129,10 +142,10 @@ export default function OnboardingScreen() {
                     : "#9ca3af"
               }
             />
-          </TouchableOpacity>
+          </Pressable>
         </View>
       </View>
-    </TouchableOpacity>
+    </Pressable>
   );
 
   const canContinue = !!selectedMosqueID;
@@ -160,16 +173,24 @@ export default function OnboardingScreen() {
           className="flex-1 text-gray-900 dark:text-white"
         />
         {query.length > 0 && (
-          <TouchableOpacity
+          <Pressable
             onPress={() => setQuery("")}
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            android_ripple={{
+              color:
+                colorScheme === "dark"
+                  ? "rgba(255,255,255,0.2)"
+                  : "rgba(0,0,0,0.1)",
+              foreground: true,
+            }}
+            style={({ pressed }) => [pressed && { opacity: 0.6 }]}
           >
             <Ionicons
               name="close-circle"
               size={20}
               color={colorScheme === "dark" ? "#9ca3af" : "#6b7280"}
             />
-          </TouchableOpacity>
+          </Pressable>
         )}
       </View>
 
@@ -195,18 +216,25 @@ export default function OnboardingScreen() {
       )}
 
       <View className="px-4 pb-8">
-        <TouchableOpacity
+        <Pressable
           disabled={!canContinue}
           onPress={() => {
             haptics.success();
             router.replace("/");
           }}
-          className={`py-4 rounded-2xl items-center ${
+          className={`py-4 rounded-2xl items-center overflow-hidden ${
             canContinue
               ? "bg-blue-600 dark:bg-blue-500"
               : "bg-gray-200 dark:bg-neutral-700"
           }`}
-          activeOpacity={0.7}
+          android_ripple={{
+            color:
+              colorScheme === "dark"
+                ? "rgba(255,255,255,0.2)"
+                : "rgba(0,0,0,0.1)",
+            foreground: true,
+          }}
+          style={({ pressed }) => [pressed && canContinue && { opacity: 0.7 }]}
         >
           <Text
             className={`text-base font-semibold ${
@@ -215,7 +243,7 @@ export default function OnboardingScreen() {
           >
             Continue
           </Text>
-        </TouchableOpacity>
+        </Pressable>
       </View>
     </View>
   );

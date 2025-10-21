@@ -2,10 +2,11 @@ import {
   Modal,
   View,
   Text,
-  TouchableOpacity,
+  Pressable,
   TextInput,
   Alert,
   TextInputChangeEvent,
+  useColorScheme,
 } from "react-native";
 import {
   type ReportModalType,
@@ -17,6 +18,7 @@ import { useState } from "react";
 import { useSubmitOnce } from "@/lib/hooks/useSubmitOnce";
 
 export default function ReportModal() {
+  const colorScheme = useColorScheme();
   const [message, setMessage] = useState("");
   const [newMosqueName, setNewMosqueName] = useState("");
   const { isOpen, reportModalType, closeReportModal } = useReportModalStore();
@@ -71,10 +73,10 @@ export default function ReportModal() {
 
   return (
     <Modal animationType="fade" transparent visible={isOpen}>
-      <TouchableOpacity
+      <Pressable
         className="flex-1 justify-center items-center bg-neutral-300/80 dark:bg-neutral-900/80"
-        activeOpacity={1}
         onPress={() => closeReportModal()}
+        android_ripple={{ color: "transparent" }}
       >
         <View className="w-96 p-5 elevation-xl rounded-2xl bg-white dark:bg-neutral-800 gap-4">
           {reportModalType === "incorrect_timings" && (
@@ -84,7 +86,7 @@ export default function ReportModal() {
           )}
           {reportModalType === "feature_request" && (
             <Text className="dark:text-white text-xl font-bold">
-              Request New Featre
+              Request New Feature
             </Text>
           )}
           {reportModalType === "new_mosque" && (
@@ -120,20 +122,38 @@ export default function ReportModal() {
           />
 
           <View className="flex-row justify-between gap-2">
-            <TouchableOpacity
-              className="flex-grow bg-neutral-200 dark:bg-neutral-700 items-center rounded-2xl p-2"
+            <Pressable
+              className="flex-grow bg-neutral-200 dark:bg-neutral-700 items-center rounded-2xl p-2 overflow-hidden"
               onPress={closeReportModal}
+              android_ripple={{
+                color:
+                  colorScheme === "dark"
+                    ? "rgba(255,255,255,0.2)"
+                    : "rgba(0,0,0,0.1)",
+                foreground: true,
+              }}
+              style={({ pressed }) => [pressed && { opacity: 0.6 }]}
             >
               <Text className="dark:text-white">Cancel</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              className={`flex-grow items-center rounded-2xl p-2 ${
+            </Pressable>
+            <Pressable
+              className={`flex-grow items-center rounded-2xl p-2 overflow-hidden ${
                 isSubmitting
                   ? "bg-neutral-300 dark:bg-neutral-600"
                   : "bg-neutral-200 dark:bg-neutral-700"
               }`}
               onPress={() => handleSubmit(reportModalType)}
               disabled={isSubmitting}
+              android_ripple={{
+                color:
+                  colorScheme === "dark"
+                    ? "rgba(255,255,255,0.2)"
+                    : "rgba(0,0,0,0.1)",
+                foreground: true,
+              }}
+              style={({ pressed }) => [
+                pressed && !isSubmitting && { opacity: 0.6 },
+              ]}
             >
               <Text
                 className={`${
@@ -144,10 +164,10 @@ export default function ReportModal() {
               >
                 {isSubmitting ? "Submitting..." : "Submit"}
               </Text>
-            </TouchableOpacity>
+            </Pressable>
           </View>
         </View>
-      </TouchableOpacity>
+      </Pressable>
     </Modal>
   );
 }

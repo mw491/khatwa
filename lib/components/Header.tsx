@@ -1,19 +1,22 @@
 import { useTodayTimings } from "@/lib/hooks/useTodayTimings";
 import { useSelectedMosqueStore } from "@/lib/store/mosqueStore";
 import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
 import {
   ActivityIndicator,
+  Pressable,
   Text,
-  TouchableOpacity,
   useColorScheme,
   View,
 } from "react-native";
 import Dropdown from "./Dropdown";
-import { router } from "expo-router";
+import { useHaptics } from "../hooks/useHaptics";
 
 export default function Header() {
   const colorScheme = useColorScheme();
   const isDark = colorScheme === "dark";
+
+  const haptics = useHaptics();
 
   // Load selected mosque's prayer times
   const { data: timings, isLoading } = useTodayTimings();
@@ -28,23 +31,32 @@ export default function Header() {
   const shouldShowLoading = isLoading && !hasData;
 
   return (
-    <View className="relative flex-row items-center w-full pt-5 pb-3 mb-5 gap-2 max-w-96">
-      <TouchableOpacity
-        className="bg-white dark:bg-neutral-800 rounded-full elevation-xl relative flex-1"
-        onPress={() => router.push("/mosques")}
+    <View className="relative flex-row items-center w-full pt-6 pb-4 mb-5 gap-3 max-w-96">
+      <Pressable
+        className="bg-white dark:bg-neutral-800 rounded-full relative flex-1 shadow-md overflow-hidden"
+        // active:scale-[0.98] transition-transform duration-200"
+        onPress={() => {
+          haptics.light();
+          router.push("/mosques");
+        }}
+        // activeOpacity={0.4}
+        android_ripple={{
+          color: isDark ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.1)",
+          foreground: true,
+        }}
       >
         {shouldShowLoading ? (
-          <View className="flex-row gap-2 p-4 items-center justify-center">
+          <View className="flex-row gap-2 px-5 py-4 items-center justify-center">
             <ActivityIndicator
               size="small"
               color={isDark ? "#ffffff" : "#111827"}
             />
-            <Text className="text-gray-900 dark:text-white text-center font-bold ml-3 max-w-90">
+            <Text className="text-gray-900 dark:text-white text-center font-bold ml-2 max-w-90">
               Loading...
             </Text>
           </View>
         ) : (
-          <View className="flex-row gap-2 p-4 items-center justify-center">
+          <View className="flex-row gap-2 px-5 py-4 items-center justify-center">
             <Text className="text-gray-900 dark:text-white text-center font-bold">
               {mosque?.mosque_name}
             </Text>
@@ -55,7 +67,7 @@ export default function Header() {
             />
           </View>
         )}
-      </TouchableOpacity>
+      </Pressable>
       <Dropdown />
     </View>
   );
