@@ -129,7 +129,7 @@ export default function MosquesScreen() {
     <Pressable
       onPress={() => handleMosqueSelect(mosque._id)}
       className={`bg-gray-50 dark:bg-neutral-800/50 rounded-2xl p-4 flex-row items-center gap-3 overflow-hidden
-        active:scale-[0.99] transition-transform duration-200 ${
+        ${
           mosque._id === selectedMosqueID
             ? "border-2 border-blue-400 dark:border-blue-500 bg-blue-50 dark:bg-blue-900/20"
             : "border border-gray-200 dark:border-neutral-600"

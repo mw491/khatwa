@@ -1,6 +1,14 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useEffect, useRef, useState } from "react";
-import { Modal, Text, Pressable, useColorScheme, View } from "react-native";
+import {
+  Animated,
+  Modal,
+  Platform,
+  Pressable,
+  Text,
+  useColorScheme,
+  View,
+} from "react-native";
 import { useReportModalStore } from "../store/reportModalStore";
 
 export default function Dropdown() {
@@ -15,6 +23,10 @@ export default function Dropdown() {
   const buttonRef = useRef<View>(null);
   const dropdownRef = useRef<View>(null);
 
+  // Animation values
+  const slideAnim = useRef(new Animated.Value(0)).current;
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+
   const toggleDropdown = () => {
     if (!modalVisible) {
       buttonRef.current?.measureInWindow(
@@ -25,8 +37,25 @@ export default function Dropdown() {
         }
       );
     } else {
-      setModalVisible(false);
+      closeDropdown();
     }
+  };
+
+  const closeDropdown = () => {
+    Animated.parallel([
+      Animated.timing(slideAnim, {
+        toValue: 0,
+        duration: 200,
+        useNativeDriver: true,
+      }),
+      Animated.timing(fadeAnim, {
+        toValue: 0,
+        duration: 200,
+        useNativeDriver: true,
+      }),
+    ]).start(() => {
+      setModalVisible(false);
+    });
   };
 
   useEffect(() => {
@@ -48,6 +77,22 @@ export default function Dropdown() {
           }
         );
       }, 10);
+
+      // Animate in
+      slideAnim.setValue(0);
+      fadeAnim.setValue(0);
+      Animated.parallel([
+        Animated.timing(slideAnim, {
+          toValue: 1,
+          duration: Platform.OS === "android" ? 250 : 200,
+          useNativeDriver: true,
+        }),
+        Animated.timing(fadeAnim, {
+          toValue: 1,
+          duration: Platform.OS === "android" ? 250 : 200,
+          useNativeDriver: true,
+        }),
+      ]).start();
     }
   }, [modalVisible]);
 
@@ -72,28 +117,40 @@ export default function Dropdown() {
       </Pressable>
 
       <Modal
-        animationType="fade"
+        animationType="none"
         transparent={true}
         visible={modalVisible}
-        onRequestClose={() => setModalVisible(false)}
+        onRequestClose={closeDropdown}
       >
-        <Pressable
-          className="flex-1 bg-transparent"
-          onPress={() => setModalVisible(false)}
-        >
-          <View
+        <Pressable className="flex-1 bg-transparent" onPress={closeDropdown}>
+          <Animated.View
             className="absolute bg-white dark:bg-neutral-800 rounded-2xl gap-0 overflow-hidden
               border-[0.5px] border-neutral-200/80 dark:border-neutral-700 shadow-md"
             style={{
               top: dropdownTop,
               left: dropdownLeft,
+              opacity: fadeAnim,
+              transform: [
+                {
+                  translateY: slideAnim.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [-20, 0],
+                  }),
+                },
+                {
+                  scale: slideAnim.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0.95, 1],
+                  }),
+                },
+              ],
             }}
             ref={dropdownRef}
           >
             <Pressable
-              className="flex-row items-center py-4 px-4"
+              className="flex-row items-center py-2 px-4"
               onPress={() => {
-                setModalVisible(false);
+                closeDropdown();
                 openReportModal("incorrect_timings");
               }}
               android_ripple={{
@@ -113,9 +170,9 @@ export default function Dropdown() {
             <View className="h-[0.5px] bg-neutral-200/80 dark:bg-neutral-700" />
 
             <Pressable
-              className="flex-row items-center py-4 px-4"
+              className="flex-row items-center py-2 px-4"
               onPress={() => {
-                setModalVisible(false);
+                closeDropdown();
                 openReportModal("new_mosque");
               }}
               android_ripple={{
@@ -135,9 +192,9 @@ export default function Dropdown() {
             <View className="h-[0.5px] bg-neutral-200/80 dark:bg-neutral-700" />
 
             <Pressable
-              className="flex-row items-center py-4 px-4 overflow-hidden"
+              className="flex-row items-center py-2 px-4"
               onPress={() => {
-                setModalVisible(false);
+                closeDropdown();
                 openReportModal("feature_request");
               }}
               android_ripple={{
@@ -154,7 +211,7 @@ export default function Dropdown() {
                 Feature Request
               </Text>
             </Pressable>
-          </View>
+          </Animated.View>
         </Pressable>
       </Modal>
     </View>

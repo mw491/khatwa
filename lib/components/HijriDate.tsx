@@ -14,7 +14,7 @@ export default function HijriDate() {
 
   const formatHijriDate = (date: Date) => {
     try {
-      return new Intl.DateTimeFormat("ar-SA-u-ca-islamic", {
+      return new Intl.DateTimeFormat("ar-SA-u-ca-islamic-umalqura", {
         day: "numeric",
         month: "long",
         year: "numeric",
