@@ -40,13 +40,30 @@ export function getCurrentOrNextPrayer(
   const now = nowParam ?? new Date();
   const currentTime = now.getHours() * 60 + now.getMinutes(); // Convert to minutes
 
-  const prayers = [
+  const prayers: { name: string; time: PrayerTime }[] = [
     { name: "fajr", time: prayerTimes.fajr },
-    { name: "dhuhr", time: prayerTimes.dhuhr },
     { name: "asr", time: prayerTimes.asr },
     { name: "maghrib", time: prayerTimes.maghrib },
     { name: "isha", time: prayerTimes.isha },
   ];
+
+  // On Fridays, if any Jumuah time is available, exclude Dhuhr and include Jumuah.
+  // Otherwise (non-Friday or no Jumuah), include Dhuhr as usual.
+  const isFriday = now.getDay() === 5;
+  const j1 = prayerTimes.jumah_1;
+  const j2 = prayerTimes.jumah_2;
+  const hasJumah = isFriday && ((typeof j1 === "string" && !!j1) || (typeof j2 === "string" && !!j2));
+
+  if (hasJumah) {
+    if (typeof j1 === "string" && j1) {
+      prayers.push({ name: "jumah_1", time: { starts: null, jamat: j1 } });
+    }
+    if (typeof j2 === "string" && j2) {
+      prayers.push({ name: "jumah_2", time: { starts: null, jamat: j2 } });
+    }
+  } else {
+    prayers.splice(1, 0, { name: "dhuhr", time: prayerTimes.dhuhr });
+  }
 
   // Helper to parse HH:MM into minutes. Returns null if invalid.
   const parseTimeToMinutes = (time: string | null): number | null => {
@@ -76,10 +93,10 @@ export function getCurrentOrNextPrayer(
       return minutes === null
         ? null
         : {
-            name: prayer.name,
-            time: prayer.time,
-            minutes,
-          };
+          name: prayer.name,
+          time: prayer.time,
+          minutes,
+        };
     })
     .filter(
       (p): p is { name: string; time: PrayerTime; minutes: number } =>

@@ -91,13 +91,59 @@ export default function Timings() {
   //   );
   // };
 
-  const renderJumahCard = (displayName: string, time: string) => {
+  const renderJumahCard = (
+    keyName: "jumah_1" | "jumah_2",
+    displayName: string,
+    time: string,
+    loading: boolean
+  ) => {
+    const isCurrentOrNext = !loading && currentPrayer.name === keyName;
+    const isCurrent = isCurrentOrNext && !currentPrayer.isNext;
+
     return (
-      <View className="flex-row flex-grow justify-between px-3 py-4 shadow-md bg-gray-50 dark:bg-neutral-800/50 rounded-2xl">
-        <Text className="font-medium text-xl text-gray-900 dark:text-white">
-          {displayName}
+      <View
+        className={`flex-row flex-grow justify-between px-3 py-4 shadow-md rounded-2xl ${
+          isCurrentOrNext
+            ? isCurrent
+              ? "bg-blue-100 dark:bg-blue-900/30 border-2 border-blue-400 dark:border-blue-500"
+              : "bg-amber-100 dark:bg-amber-900/30 border-2 border-amber-400 dark:border-amber-500"
+            : "bg-gray-50 dark:bg-neutral-800/50"
+        }`}
+      >
+        <View className="flex-row items-center gap-2">
+          {isCurrentOrNext && (
+            <View
+              className={`w-2 h-2 rounded-full ${
+                isCurrent
+                  ? "bg-blue-500 dark:bg-blue-400"
+                  : "bg-amber-500 dark:bg-amber-400"
+              }`}
+            />
+          )}
+          <Text
+            className={`font-medium text-xl ${
+              isCurrentOrNext
+                ? isCurrent
+                  ? "text-blue-900 dark:text-blue-100 font-bold"
+                  : "text-amber-900 dark:text-amber-100 font-bold"
+                : "text-gray-900 dark:text-white"
+            }`}
+          >
+            {displayName}
+          </Text>
+          {/* removed NOW/NEXT label for space */}
+        </View>
+        <Text
+          className={`text-lg ${
+            isCurrentOrNext
+              ? isCurrent
+                ? "text-blue-900 dark:text-blue-100 font-bold"
+                : "text-amber-900 dark:text-amber-100 font-bold"
+              : "text-gray-900 dark:text-white"
+          }`}
+        >
+          {time}
         </Text>
-        <Text className="text-lg text-gray-900 dark:text-white">{time}</Text>
       </View>
     );
   };
@@ -143,17 +189,7 @@ export default function Timings() {
           >
             {displayName}
           </Text>
-          {isCurrentOrNext && (
-            <Text
-              className={`text-xs font-medium ${
-                isCurrent
-                  ? "text-blue-700 dark:text-blue-300"
-                  : "text-amber-700 dark:text-amber-300"
-              }`}
-            >
-              {isCurrent ? "NOW" : "NEXT"}
-            </Text>
-          )}
+          {/* removed NOW/NEXT label for space */}
         </View>
         <View className="flex-row gap-4">
           <View className="items-center">
@@ -252,11 +288,18 @@ export default function Timings() {
         <View className="flex-row justify-between gap-2">
           {prayerTimes?.jumah_1 &&
             renderJumahCard(
+              "jumah_1",
               prayerTimes?.jumah_2 ? "Jumah 1" : "Jumah",
-              prayerTimes?.jumah_1 ?? ""
+              prayerTimes?.jumah_1 ?? "",
+              shouldShowLoading
             )}
           {prayerTimes?.jumah_2 &&
-            renderJumahCard("Jumah 2", prayerTimes?.jumah_2 ?? "")}
+            renderJumahCard(
+              "jumah_2",
+              "Jumah 2",
+              prayerTimes?.jumah_2 ?? "",
+              shouldShowLoading
+            )}
         </View>
       </View>
     </View>
